@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MHF Partners — Gerador de Conteúdo</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Barlow+Condensed:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;600;700&family=Oswald:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* ====================================================
+   VARIÁVEIS — edite aqui para ajustar cores globais
+   ==================================================== */
+:root {
+  --navy:   #1B3068;
+  --nd:     #0f1d3e;   /* navy dark */
+  --cream:  #F5EDCC;
+  --gold:   #C4A96B;
+  --bg:     #0b0f18;
+  --bp:     #111622;   /* bg panel */
+  --bc:     #161d2e;   /* bg card */
+  --bdr:    rgba(196,169,107,.13);
+  --tx:     rgba(245,237,204,.88);
+  --mu:     rgba(245,237,204,.36);
+  --r:      6px;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+header{background:var(--bp);border-bottom:1px solid var(--bdr);padding:14px 34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:800;color:var(--cream);}
+.logo b{color:var(--gold);}
+.htag{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mu);}
+
+/* ── LAYOUT ── */
+.main{display:grid;grid-template-columns:348px 1fr;flex:1;overflow:hidden;height:calc(100vh - 53px);}
+
+/* ── FORM ── */
+.pf{background:var(--bp);border-right:1px solid var(--bdr);padding:20px 17px;overflow-y:auto;display:flex;flex-direction:column;gap:17px;}
+.sl{font-size:8.5px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.tB{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:10px 8px;cursor:pointer;transition:all .17s;text-align:center;}
+.tB:hover{border-color:rgba(196,169,107,.4);background:rgba(196,169,107,.04);}
+.tB.on{border-color:var(--gold);background:rgba(196,169,107,.1);}
+.tB .ic{font-size:14px;display:block;margin-bottom:3px;}
+.tB .tl{font-size:10.5px;font-weight:700;color:var(--cream);display:block;}
+.tB .td{font-size:8.5px;color:var(--mu);margin-top:1px;display:block;}
+
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg label{font-size:8.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+.fg input,.fg select,.fg textarea{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:10px 12px;color:var(--cream);font-family:'Barlow',sans-serif;font-size:13px;outline:none;transition:border-color .17s;width:100%;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:rgba(196,169,107,.52);}
+.fg select option{background:var(--bc);}
+.fg textarea{min-height:90px;resize:vertical;line-height:1.6;}
+
+#fs{display:flex;}
+.scw{display:flex;align-items:center;gap:11px;}
+.scw button{width:28px;height:28px;border-radius:50%;border:1px solid var(--bdr);background:var(--bc);color:var(--cream);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;}
+.scw button:hover{border-color:var(--gold);color:var(--gold);}
+.scn{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--cream);}
+.scl{font-size:8.5px;color:var(--mu);}
+
+.bg{width:100%;padding:13px;background:var(--navy);border:1px solid var(--gold);border-radius:var(--r);color:var(--cream);font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.bg:hover:not(:disabled){background:var(--gold);color:var(--navy);}
+.bg:disabled{opacity:.42;cursor:not-allowed;}
+.sp{width:12px;height:12px;border:2px solid rgba(245,237,204,.22);border-top-color:var(--cream);border-radius:50%;animation:rot .72s linear infinite;display:none;}
+@keyframes rot{to{transform:rotate(360deg);}}
+
+.mg{padding:9px 12px;border-radius:var(--r);font-size:11px;font-weight:500;display:none;line-height:1.5;}
+.mg.er{background:rgba(220,50,50,.08);border:1px solid rgba(220,50,50,.22);color:#ff8080;display:block;}
+.mg.inf{background:rgba(196,169,107,.06);border:1px solid var(--bdr);color:var(--mu);display:block;}
+
+/* ── PREVIEW ── */
+.pp{background:var(--bg);overflow-y:auto;padding:22px 28px;display:flex;flex-direction:column;gap:15px;}
+.em{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:.26;text-align:center;}
+.em .ei{font-size:36px;}
+.em p{font-size:12.5px;color:var(--mu);line-height:1.6;}
+
+.ph{display:flex;align-items:center;justify-content:space-between;padding-bottom:11px;border-bottom:1px solid var(--bdr);}
+.pt{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--cream);text-transform:uppercase;}
+.ps{font-size:10px;color:var(--mu);margin-top:2px;}
+.bda{padding:7px 14px;background:transparent;border:1px solid var(--gold);border-radius:var(--r);color:var(--gold);font-family:'Barlow',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.bda:hover{background:var(--gold);color:var(--navy);}
+
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:13px;}
+.sw{display:flex;flex-direction:column;gap:6px;}
+.sa{display:flex;align-items:center;justify-content:space-between;}
+.sa .nl{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mu);}
+.sab{display:flex;gap:4px;}
+.bv,.bd{padding:4px 8px;background:transparent;border:1px solid var(--bdr);border-radius:3px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .17s;}
+.bv:hover{border-color:rgba(196,169,107,.5);color:var(--gold);}
+.bd:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ====================================================
+   SLIDES — BASE (todas as fixes do v3 incluídas)
+   ==================================================== */
+.igs{width:245px;height:245px;position:relative;overflow:hidden;font-family:'Barlow',sans-serif;flex-shrink:0;}
+.igs.story{height:436px;}  /* FIX #7: 9:16 */
+
+.igs .bgl  {position:absolute;inset:0;pointer-events:none;z-index:0;}
+.igs .svgl {position:absolute;inset:0;pointer-events:none;z-index:1;}
+.igs.dark  .svgo{position:absolute;inset:0;pointer-events:none;z-index:2;}
+.igs.light .svgo{position:absolute;inset:0;pointer-events:none;z-index:2;}
+
+/* FIX #11 + #12 */
+.igs .sb{position:absolute;inset:0;padding:19px 20px 28px;display:flex;flex-direction:column;z-index:3;overflow:hidden;}
+.igs .sb>div{min-height:0;overflow:hidden;flex-shrink:1;}
+.igs.story .sb{padding:32px 24px 44px;} /* FIX #9 */
+
+.igs .dn{position:absolute;bottom:-4px;right:6px;font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-3px;pointer-events:none;z-index:2;user-select:none;}
+.igs.story .dn{font-size:125px;} /* FIX #8 */
+.igs.dark  .dn{color:rgba(245,237,204,.04);}
+.igs.light .dn{color:rgba(27,48,104,.05);}
+
+.igs .wm{position:absolute;bottom:7px;right:10px;font-family:'Barlow Condensed',sans-serif;font-size:7px;font-weight:700;letter-spacing:1.5px;pointer-events:none;z-index:5;}
+.igs.dark  .wm  {color:rgba(245,237,204,.19);}
+.igs.dark  .wm b{color:rgba(196,169,107,.38);}
+.igs.light .wm  {color:rgba(27,48,104,.21);}
+.igs.light .wm b{color:var(--gold);}
+
+.igs .sn{position:absolute;top:8px;right:10px;font-family:'Barlow Condensed',sans-serif;font-size:6.5px;font-weight:700;letter-spacing:2px;pointer-events:none;z-index:5;}
+.igs.dark  .sn{color:rgba(245,237,204,.19);}
+.igs.light .sn{color:rgba(27,48,104,.19);}
+
+/* FIX #13: headline clamp */
+[data-f="tag"]{font-size:6.5px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);outline:none;cursor:text;}
+[data-f="headline"]{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;line-height:1.03;text-transform:uppercase;letter-spacing:-.3px;outline:none;cursor:text;margin-top:4px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;line-clamp:4;overflow:hidden;}
+.igs.dark  [data-f="headline"]{color:var(--cream);}
+.igs.light [data-f="headline"]{color:var(--navy);}
+.igs.story [data-f="headline"]{font-size:28px;} /* FIX #10 */
+
+[data-f="sub"]{font-size:8.5px;font-weight:400;font-style:italic;line-height:1.5;margin-top:5px;outline:none;cursor:text;}
+.igs.dark  [data-f="sub"]{color:rgba(245,237,204,.5);}
+.igs.light [data-f="sub"]{color:rgba(27,48,104,.5);}
+
+/* FIX #14: body clamp */
+[data-f="body"]{font-size:9px;font-weight:400;line-height:1.62;outline:none;cursor:text;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;overflow:hidden;}
+.igs.dark  [data-f="body"]{color:rgba(245,237,204,.68);}
+.igs.light [data-f="body"]{color:rgba(27,48,104,.6);}
+.igs.story [data-f="body"]{-webkit-line-clamp:8;line-clamp:8;font-size:10px;}
+
+.rb{margin-top:6px;padding:5px 7px;border-left:2px solid var(--gold);background:rgba(196,169,107,.08);border-radius:0 3px 3px 0;flex-shrink:0;}
+.rb .rl{font-size:5.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
+[data-f="result"]{font-size:8.5px;font-weight:600;color:var(--cream);line-height:1.4;outline:none;cursor:text;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
+
+.gl{width:22px;height:2px;background:var(--gold);flex-shrink:0;}
+.cp{display:inline-block;font-size:6.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:5px 10px;border-radius:2px;margin-top:7px;outline:none;cursor:text;flex-shrink:0;}
+.igs.dark  .cp{background:var(--gold);color:var(--nd);}
+.igs.light .cp{background:var(--navy);color:var(--cream);}
+
+/* Checklist */
+.cli{display:flex;align-items:flex-start;gap:5px;margin-top:4px;}
+.cli .ci{font-size:9px;flex-shrink:0;margin-top:1px;}
+.cli .ct{font-size:8.5px;line-height:1.4;outline:none;cursor:text;}
+.igs.dark  .ct{color:rgba(245,237,204,.7);}
+.igs.light .ct{color:rgba(27,48,104,.62);}
+
+/* Countdown item num */
+.cnt-n{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:800;line-height:1;color:var(--gold);opacity:.7;flex-shrink:0;}
+
+[contenteditable="true"]:hover{outline:1px dashed rgba(196,169,107,.3);border-radius:2px;}
+[contenteditable="true"]:focus{outline:1px solid rgba(196,169,107,.6);border-radius:2px;background:rgba(196,169,107,.04);}
+
+/* Reels */
+.rw{display:flex;flex-direction:column;gap:7px;}
+.rc{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;}
+.rh{background:var(--navy);padding:7px 11px;display:flex;align-items:center;justify-content:space-between;}
+.rh .rn{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
+.rh .rd{font-size:8px;font-weight:600;color:var(--mu);background:rgba(255,255,255,.05);padding:2px 6px;border-radius:20px;}
+.rb2{padding:9px 11px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.rc2 label{font-size:6.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:4px;}
+.rc2 [contenteditable]{font-size:11px;line-height:1.6;color:var(--tx);outline:none;cursor:text;min-height:30px;}
+
+/* Caption */
+.cap{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:11px 13px;margin-top:11px;}
+.cap .cl{font-size:7px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:6px;}
+.cap [contenteditable]{font-size:11px;line-height:1.7;color:var(--tx);outline:none;cursor:text;min-height:36px;}
+.ht{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;}
+.htt{font-size:9px;font-weight:600;color:var(--gold);background:rgba(196,169,107,.07);border:1px solid rgba(196,169,107,.16);padding:2px 7px;border-radius:20px;}
+
+/* Static */
+.stl {display:grid;grid-template-columns:245px 1fr;gap:14px;align-items:start;}
+.stls{display:flex;flex-direction:column;gap:7px;}
+.vc  {background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:11px 13px;}
+.vc .vcl{font-size:7px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:6px;}
+.vc [contenteditable]{font-size:11px;line-height:1.6;color:var(--mu);outline:none;cursor:text;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(196,169,107,.15);border-radius:2px;}
+
+/* ── EDITOR DE LAYOUT ─────────────────────────────────────── */
+.be{padding:4px 10px;background:transparent;border:1px solid var(--bdr);border-radius:3px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .17s;}
+.be:hover{border-color:rgba(196,169,107,.5);color:var(--gold);}
+.be.be-on{border-color:var(--gold);color:var(--gold);background:rgba(196,169,107,.07);}
+
+.igs.edit-active{outline:2px solid rgba(196,169,107,.4);outline-offset:-2px;}
+.igs.edit-active [data-f],.igs.edit-active .cp{
+  outline:1px dashed rgba(196,169,107,.32);border-radius:2px;
+  cursor:pointer !important;user-select:none;
+}
+.igs.edit-active [data-f]:hover,.igs.edit-active .cp:hover{
+  outline:1px solid rgba(196,169,107,.6);background:rgba(196,169,107,.06);
+}
+.em-sel{outline:1px solid var(--gold) !important;background:rgba(196,169,107,.08) !important;border-radius:2px;}
+
+#etb{
+  position:fixed;right:16px;top:50%;transform:translateY(-50%);
+  width:188px;z-index:99999;
+  background:#0c1220;border:1px solid rgba(196,169,107,.28);
+  border-radius:8px;display:none;flex-direction:column;
+  box-shadow:0 10px 44px rgba(0,0,0,.88);overflow:hidden;
+}
+#etb-hdr{
+  background:rgba(196,169,107,.07);border-bottom:1px solid rgba(196,169,107,.14);
+  padding:10px 13px;cursor:grab;user-select:none;
+  display:flex;align-items:center;gap:7px;
+  font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+}
+#etb-hdr:active{cursor:grabbing;}
+.etb-sec{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;gap:5px;}
+.etb-sec:last-child{border-bottom:none;}
+.etb-lbl{font-size:7px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mu);}
+.etb-row{display:flex;gap:4px;}
+#etb button{
+  flex:1;height:34px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(196,169,107,.14);
+  border-radius:4px;color:var(--cream);
+  font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:4px;padding:0 6px;
+}
+#etb button:hover{background:rgba(196,169,107,.13);color:var(--gold);border-color:rgba(196,169,107,.35);}
+#etb-grip{background:rgba(196,169,107,.06)!important;border:1px dashed rgba(196,169,107,.3)!important;color:var(--gold)!important;cursor:grab!important;}
+#etb-grip:active{cursor:grabbing!important;}
+#etb select{
+  height:34px;width:100%;
+  background:rgba(255,255,255,.04);border:1px solid rgba(196,169,107,.14);
+  border-radius:4px;color:var(--cream);
+  font-family:'Barlow',sans-serif;font-size:11px;
+  padding:0 8px;cursor:pointer;outline:none;
+}
+#etb select option{background:#0c1220;}
+#etb input[type="color"]{width:36px;height:34px;border:1px solid rgba(196,169,107,.14);border-radius:4px;cursor:pointer;padding:2px;background:none;flex-shrink:0;}
+.etb-hex{
+  flex:1;height:34px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(196,169,107,.14);
+  border-radius:4px;color:var(--cream);
+  font-family:'Barlow',monospace;font-size:12px;font-weight:600;
+  padding:0 8px;outline:none;text-transform:uppercase;letter-spacing:1px;
+}
+.etb-hex:focus{border-color:rgba(196,169,107,.5);}
+.etb-hex::placeholder{color:var(--mu);font-size:10px;}
+.etb-sep{display:none;}
+.em-bg-ctrl{display:flex;align-items:center;gap:6px;}
+.em-bg-ctrl label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mu);white-space:nowrap;}
+.em-bg-ctrl input[type="color"]{width:26px;height:26px;border:1px solid var(--bdr);border-radius:3px;cursor:pointer;padding:1px;background:none;}
+.em-bg-ctrl button{padding:5px 10px;background:transparent;border:1px solid var(--bdr);border-radius:3px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .17s;}
+.em-bg-ctrl button:hover{border-color:rgba(196,169,107,.5);color:var(--gold);}
+
+/* ── MODAL DE EDIÇÃO COM ZOOM ──────────────────────────────── */
+#em-modal{
+  position:fixed;inset:0;
+  background:rgba(2,4,9,.93);
+  z-index:9998;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:20px;padding:24px;overflow:auto;
+}
+#em-scaler-wrap{
+  flex-shrink:0;position:relative;
+  box-shadow:0 16px 56px rgba(0,0,0,.8);
+}
+#em-scaler{
+  position:absolute;top:0;left:0;
+  transform-origin:top left;
+}
+#em-modal-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px 18px;
+  background:var(--bp);border:1px solid var(--bdr);
+  border-radius:var(--r);
+  min-width:280px;max-width:560px;width:100%;
+  flex-shrink:0;
+}
+.em-hint{
+  font-size:8.5px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--mu);
+}
+#em-modal-bar button{
+  padding:7px 18px;background:transparent;
+  border:1px solid var(--gold);border-radius:var(--r);
+  color:var(--gold);font-family:'Barlow',sans-serif;
+  font-size:8.5px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;transition:all .2s;
+  white-space:nowrap;
+}
+#em-modal-bar button:hover{background:var(--gold);color:var(--navy);}
+
+/* ── HISTÓRICO DE POSTS ────────────────────────────────────── */
+#hist-btn{padding:6px 12px;background:transparent;border:1px solid var(--bdr);border-radius:4px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+#hist-btn:hover{border-color:rgba(196,169,107,.5);color:var(--gold);}
+
+#hist-overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:9990;opacity:0;pointer-events:none;transition:opacity .3s;}
+#hist-overlay.open{opacity:1;pointer-events:auto;}
+
+#hist-drawer{
+  position:fixed;top:0;right:0;width:340px;height:100vh;
+  background:var(--bp);border-left:1px solid var(--bdr);
+  z-index:9991;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);
+  box-shadow:-6px 0 28px rgba(0,0,0,.5);
+}
+#hist-drawer.open{transform:translateX(0);}
+
+.hist-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.hist-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--cream);}
+.hist-hdr button{width:28px;height:28px;background:transparent;border:1px solid var(--bdr);border-radius:50%;color:var(--mu);font-size:13px;cursor:pointer;transition:all .17s;display:flex;align-items:center;justify-content:center;}
+.hist-hdr button:hover{border-color:rgba(196,169,107,.5);color:var(--gold);}
+
+.hist-search-wrap{padding:12px 16px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.hist-search-wrap input{width:100%;background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:8px 12px;color:var(--cream);font-family:'Barlow',sans-serif;font-size:12px;outline:none;transition:border-color .17s;}
+.hist-search-wrap input:focus{border-color:rgba(196,169,107,.5);}
+.hist-search-wrap input::placeholder{color:var(--mu);}
+
+.hist-list{flex:1;overflow-y:auto;padding:10px;}
+.hist-empty{display:flex;align-items:center;justify-content:center;min-height:120px;color:var(--mu);font-size:12px;text-align:center;padding:20px;}
+
+.hist-card{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;transition:border-color .17s;}
+.hist-card:hover{border-color:rgba(196,169,107,.28);}
+.hist-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;}
+.hist-badge{font-size:7.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 7px;border-radius:20px;border:1px solid currentColor;}
+.hist-badge.tema{color:var(--mu);border-color:var(--bdr);}
+.hist-gancho{font-size:12px;font-weight:700;color:var(--cream);line-height:1.4;margin-bottom:5px;}
+.hist-ideia{font-size:10.5px;color:var(--mu);line-height:1.5;margin-bottom:8px;}
+.hist-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.hist-meta span{font-size:9px;color:var(--mu);}
+.hist-reusar{width:100%;padding:6px 0;background:transparent;border:1px solid var(--bdr);border-radius:3px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .17s;}
+.hist-reusar:hover{border-color:var(--gold);color:var(--gold);background:rgba(196,169,107,.05);}
+
+.hist-foot{padding:12px 16px;border-top:1px solid var(--bdr);flex-shrink:0;}
+.hist-foot button{width:100%;padding:9px 0;background:transparent;border:1px solid rgba(220,50,50,.25);border-radius:var(--r);color:rgba(220,100,100,.7);font-family:'Barlow',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .17s;}
+.hist-foot button:hover{border-color:rgba(220,50,50,.5);color:#ff8080;background:rgba(220,50,50,.06);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><b>MHF</b> Partners</div>
+  <div class="htag">Gerador de Conteúdo · Instagram</div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button id="hist-btn" onclick="abrirHistorico()">📋 Histórico</button>
+    <button onclick="novaGeracao()" style="padding:6px 14px;background:transparent;border:1px solid var(--bdr);border-radius:4px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='rgba(196,169,107,.5)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--bdr)';this.style.color='var(--mu)'">✕ Novo</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- ── FORM ─────────────────────────────────── -->
+  <div class="pf">
+
+    <div class="fg">
+      <label>Chave da API Anthropic</label>
+      <input type="password" id="apikey" placeholder="sk-ant-api03-..." oninput="saveKey(this.value)" autocomplete="off" spellcheck="false">
+      <span id="apist" style="font-size:9px;color:var(--mu);margin-top:-2px;"></span>
+    </div>
+
+    <div>
+      <div class="sl">Tipo de conteúdo</div>
+      <div class="tg">
+        <button class="tB on" data-t="carousel"    onclick="selT('carousel',this)">   <span class="ic">🖼️</span><span class="tl">Carrossel</span>     <span class="td">Múltiplos slides</span></button>
+        <button class="tB"    data-t="static"      onclick="selT('static',this)">     <span class="ic">📸</span><span class="tl">Post Estático</span>  <span class="td">Imagem única</span></button>
+        <button class="tB"    data-t="reels"       onclick="selT('reels',this)">      <span class="ic">🎬</span><span class="tl">Roteiro Reels</span>  <span class="td">Cena + narração</span></button>
+        <button class="tB"    data-t="stories"     onclick="selT('stories',this)">    <span class="ic">⚡</span><span class="tl">Stories</span>        <span class="td">Sequência 9:16</span></button>
+        <button class="tB"    data-t="antesdepois" onclick="selT('antesdepois',this)"><span class="ic">↔️</span><span class="tl">Antes & Depois</span> <span class="td">Comparação</span></button>
+        <button class="tB"    data-t="checklist"   onclick="selT('checklist',this)">  <span class="ic">✅</span><span class="tl">Checklist</span>      <span class="td">Lista de tarefas</span></button>
+        <button class="tB"    data-t="countdown"   onclick="selT('countdown',this)">  <span class="ic">🔢</span><span class="tl">Countdown</span>      <span class="td">Sequência numerada</span></button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label>Tema</label>
+      <select id="fth">
+        <option value="educativo">Educativo — ensinar algo útil e aplicável</option>
+        <option value="posicionamento">Posicionamento — construir autoridade</option>
+        <option value="captacao">Captação — dor + solução + CTA direto</option>
+        <option value="bastidores">Bastidores — como a MHF trabalha</option>
+        <option value="desmistificacao">Desmistificação — quebrar medo ou mito sobre IA</option>
+        <option value="urgencia">Urgência — o custo real de não automatizar</option>
+        <option value="apresentacao">Apresentação — quem é a MHF e o que faz</option>
+        <option value="ferramentas">Ferramentas — explicar uma ferramenta específica</option>
+        <option value="tendencia">Tendência — novidade em IA que impacta negócios</option>
+        <option value="provocacao">Provocação — pergunta que gera identificação imediata</option>
+        <option value="livre">Livre — opinião ou tema aberto</option>
+      </select>
+    </div>
+
+    <div class="fg" id="fs">
+      <label>Número de slides</label>
+      <div class="scw">
+        <button onclick="chgS(-1)">−</button>
+        <div><div class="scn" id="scn">6</div><div class="scl">slides</div></div>
+        <button onclick="chgS(1)">+</button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label>Ideia do conteúdo</label>
+      <textarea id="fid" placeholder="Descreva o que quer comunicar. Quanto mais específico, melhor o resultado. Ex: mostrar que um dono de e-commerce gasta horas respondendo mensagem repetitiva que um bot resolve em segundos..."></textarea>
+    </div>
+
+    <div class="fg" style="position:relative;">
+      <label>Referência de estilo <span style="color:var(--mu);font-weight:400;letter-spacing:0;text-transform:none;font-size:9px;">(opcional)</span></label>
+      <textarea id="fref" placeholder="Cole aqui uma frase, título ou exemplo de post que admira e quer como referência de tom. Ex: 'Você não tem um problema de vendas. Tem um problema de processo.' — esse tipo de frase direta e provocativa." style="min-height:70px;" oninput="onRefInput()"></textarea>
+      <button id="fref-clear" onclick="clearRef()" title="Limpar referência" style="display:none;position:absolute;top:22px;right:6px;width:20px;height:20px;background:var(--bc);border:1px solid var(--bdr);border-radius:50%;color:var(--mu);font-size:10px;cursor:pointer;padding:0;line-height:1;transition:all .17s;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='rgba(196,169,107,.5)'" onmouseout="this.style.color='var(--mu)';this.style.borderColor='var(--bdr)'">✕</button>
+    </div>
+
+    <div class="mg" id="msg"></div>
+
+    <button class="bg" id="bgen" onclick="gen()">
+      <div class="sp" id="sp"></div>
+      <span id="bl">Gerar conteúdo</span>
+    </button>
+
+    <div class="mg inf">💡 Clique em qualquer texto para editar. Use <strong>✦ Visual</strong> para gerar arte de fundo por IA.</div>
+
+  </div>
+
+  <!-- ── PREVIEW ────────────────────────────────── -->
+  <div class="pp" id="pp">
+    <div class="em" id="em">
+      <div class="ei">✦</div>
+      <p>Preencha o formulário e clique<br>em <strong>Gerar conteúdo</strong>.</p>
+    </div>
+    <div id="out" style="display:none;width:100%;"></div>
+  </div>
+
+</div>
+
+
+<script>
+const MODEL = "claude-sonnet-4-6";
+
+function getApiKey() { return document.getElementById('apikey').value.trim(); }
+function saveKey(v) {
+  const k = v.trim();
+  if (k) localStorage.setItem('mhf_api_key', k); else localStorage.removeItem('mhf_api_key');
+  const st = document.getElementById('apist');
+  if (st) st.textContent = k ? '✓ Chave salva no navegador' : '';
+}
+
+// ============================================================
+// CONTEXTO E FRAMEWORK DE COPY DA MHF
+// Edite aqui para atualizar o briefing da empresa e as regras
+// ============================================================
+const MHF_CTX = `Você é um COPYWRITER especialista em conteúdo de autoridade para Instagram B2B.
+Escreve para a MHF Partners — consultoria que implementa IA e automação para qualquer negócio que perde tempo com trabalho manual.
+
+=== EMPRESA ===
+Missão: liberar o dono do negócio das operações para focar em crescimento.
+Atende: qualquer segmento, autônomos e empresas de qualquer porte.
+Entregas: bots de atendimento (WhatsApp/redes sociais), controle financeiro automatizado, geradores de conteúdo, automações de processo interno.
+Diferenciais: entrega com qualidade, suporte contínuo, crescimento junto com o cliente.
+Fase: empresa em construção de autoridade e captação inicial.
+
+=== PÚBLICO ===
+Donos de negócio, autônomos, empreendedores que ainda operam manualmente em tarefas repetitivas.
+Perfil: sabe que precisa mudar, mas não sabe por onde começar ou acha que IA é "coisa de grande empresa".
+
+=== TOM ===
+Parceiro que sabe mais que você — não professor corporativo, não vendedor ansioso.
+Direto. Com ponto de vista. Sem suavizar o que precisa ser dito.
+
+=== FRAMEWORK DE COPY — SIGA SEMPRE ===
+
+ESTRUTURA GVC (obrigatório em todo conteúdo):
+G (Gancho): primeira frase que para o scroll e cria tensão ou identificação em 2 segundos.
+V (Virada): conteúdo que entrega o que o gancho prometeu — dado, argumento, cenário real.
+C (CTA): ação específica com benefício claro — nunca "link na bio" genérico.
+
+REGRAS ABSOLUTAS:
+1. ESPECIFICIDADE É TUDO
+   ❌ "Automatize seu negócio e ganhe mais tempo"
+   ✅ "Você gasta em média 2h por dia respondendo mensagem. Um bot da MHF faz isso em 0 segundos."
+
+2. DADOS PLAUSÍVEIS SÃO OBRIGATÓRIOS
+   Use números e cenários baseados em realidade de mercado.
+   Pode criar dados plausíveis: "Segundo McKinsey, donos de PMEs gastam 40% do tempo em tarefas que poderiam ser automatizadas."
+
+3. GATILHOS MENTAIS ESTRATÉGICOS
+   Use: curiosidade (abre lacuna mental), urgência (custo de não agir agora), autoridade (dado + posição firme), prova (cenário concreto).
+
+4. ZERO JARGÃO CORPORATIVO
+   Banido: maximize, potencialize, transforme, revolucione, soluções completas, ecossistema.
+   Permitido: verbos de ação, situações do dia a dia, números, consequências reais.
+
+5. CADA FRASE GANHA O DIREITO DE EXISTIR
+   Sem enchimento. Sem transições genéricas. Se a frase não faz trabalho, corte.
+
+6. PONTO DE VISTA CLARO
+   A MHF tem opinião. Quando algo é um erro de gestão, diga que é um erro.
+   Ex: "Continuar fazendo isso na mão em 2026 não é tradição. É desperdício."
+
+GATILHO DE TESTE: o leitor deve pensar "isso sou eu" nos primeiros 5 segundos.
+Se o copy não cria essa identificação, reescreva até criar.
+
+REGRA DO CTA FINAL:
+O CTA nunca deve ser genérico. Sempre escolha entre dois modelos:
+1. CTA de comentário: peça uma ação específica e fácil.
+   Ex: "Comenta aqui: qual dessas tarefas te consome mais tempo?" ou "Responde nos comentários: você ainda faz isso na mão?"
+   → Gera engajamento real e sinaliza relevância ao algoritmo.
+2. CTA de conversão: direciona para ação de negócio com benefício claro.
+   Ex: "Acessa o link na bio e descobre em 5 minutos o que automatizar primeiro no seu negócio."
+   → Nunca apenas "link na bio".
+
+Escolha modelo 1 (comentário) para: educativo, posicionamento, provocação.
+Escolha modelo 2 (conversão) para: captacao, urgencia.
+Demais temas: use o modelo mais adequado ao contexto.
+BANIDO: "começa essa conversa hoje", "fale conosco", "entre em contato" e qualquer variação genérica.
+
+=== VOZ POR TEMA — AJUSTE O TOM CONFORME O TEMA RECEBIDO ===
+
+provocacao: mais afiado. Afirmações que incomodam. O leitor deve questionar o que está fazendo agora.
+urgencia: sério e factual. Dados e consequências concretas de não agir. Sem drama — só realidade.
+educativo: claro e aplicável. O leitor sai sabendo fazer algo ou entendendo algo que não entendia antes.
+bastidores: humano e pessoal. Fala como parceiro que está construindo junto. Menos formal, mais real.
+desmistificacao: direto ao mito. Destrói a crença errada com argumento simples e irrefutável.
+captacao: dor específica primeiro, solução depois. Nunca ao contrário.
+posicionamento: confiante, sem se justificar. A MHF sabe do que fala e isso aparece no texto.
+Demais temas: tom padrão MHF — parceiro direto, técnico mas humano.
+
+RESPONDA APENAS COM JSON VÁLIDO. SEM MARKDOWN. SEM TEXTO ANTES OU DEPOIS.`;
+
+// ============================================================
+// VISUAL MODES — 8 modos visuais distintos
+// Cada modo define: bg, decos, headlineSize, layout, decoNum
+// ============================================================
+const VM = [
+  // A — EDITORIAL: tipo domina, linha horizontal dourada, sem formas
+  { id:'A',
+    bg: ()=>'linear-gradient(158deg,#040c1e 0%,#152247 100%)',
+    bgl:()=>'#F5EDCC',
+    dec:()=>`<div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);z-index:4;pointer-events:none;"></div>
+             <div style="position:absolute;bottom:26px;left:20px;right:20px;height:1px;background:rgba(196,169,107,.12);z-index:3;pointer-events:none;"></div>`,
+    hl:'30px', layout:'sb-top', dn:false },
+
+  // B — SIDEBAR: barra vertical dourada, conteúdo com recuo
+  { id:'B',
+    bg: ()=>'linear-gradient(180deg,#090f1c 0%,#1B3068 100%)',
+    bgl:()=>'#F5EDCC',
+    dec:()=>`<div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--gold);z-index:4;pointer-events:none;"></div>`,
+    hl:'25px', layout:'sb-left', dn:true, dno:0.06 },
+
+  // C — CONCENTRIC: dois círculos concêntricos, layout centralizado
+  { id:'C',
+    bg: ()=>'radial-gradient(ellipse at 35% 65%,#1B3068 0%,#081428 70%)',
+    bgl:()=>'#F5EDCC',
+    dec:()=>`<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:185px;height:185px;border-radius:50%;border:1px solid rgba(196,169,107,.18);z-index:2;pointer-events:none;"></div>
+             <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:215px;height:215px;border-radius:50%;border:1px solid rgba(196,169,107,.07);z-index:2;pointer-events:none;"></div>`,
+    hl:'24px', layout:'sb-center', dn:false },
+
+  // D — PURE DARK: quase preto, pequenos acentos nos cantos opostos
+  { id:'D',
+    bg: ()=>'#040911',
+    bgl:()=>'#F5EDCC',
+    dec:()=>`<div style="position:absolute;top:17px;left:18px;width:26px;height:2px;background:var(--gold);z-index:4;pointer-events:none;"></div>
+             <div style="position:absolute;top:17px;left:18px;width:2px;height:26px;background:var(--gold);z-index:4;pointer-events:none;"></div>
+             <div style="position:absolute;bottom:17px;right:18px;width:26px;height:2px;background:rgba(196,169,107,.35);z-index:4;pointer-events:none;"></div>
+             <div style="position:absolute;bottom:17px;right:18px;width:2px;height:26px;background:rgba(196,169,107,.35);z-index:4;pointer-events:none;"></div>`,
+    hl:'28px', layout:'sb-center', dn:false },
+
+  // E — NUM HERO: número muito visível como elemento principal
+  { id:'E',
+    bg: ()=>'linear-gradient(140deg,#0d1b38 0%,#1c2f5e 100%)',
+    bgl:()=>'#F5EDCC',
+    dec:()=>``,
+    hl:'24px', layout:'sb-bottom', dn:true, dno:0.14, dns:'108px' },
+
+  // F — FRAME: moldura interna dourada fina
+  { id:'F',
+    bg: ()=>'linear-gradient(135deg,#0c1a35 0%,#1B3068 100%)',
+    bgl:()=>'#F5EDCC',
+    dec:()=>`<div style="position:absolute;inset:7px;border:1px solid rgba(196,169,107,.18);z-index:2;pointer-events:none;"></div>`,
+    hl:'25px', layout:'sb-center', dn:false },
+
+  // G — CORNER-L: elemento L dourado em canto, assimétrico
+  { id:'G',
+    bg: ()=>'linear-gradient(145deg,#0a1526 0%,#1B3068 100%)',
+    bgl:()=>'#F5EDCC',
+    dec:()=>`<div style="position:absolute;top:0;left:0;width:46px;height:2px;background:var(--gold);z-index:4;pointer-events:none;"></div>
+             <div style="position:absolute;top:0;left:0;width:2px;height:46px;background:var(--gold);z-index:4;pointer-events:none;"></div>`,
+    hl:'26px', layout:'sb-sb', dn:true, dno:0.05 },
+
+  // H — DIAGONAL: faixa diagonal cria dois planos de profundidade
+  { id:'H',
+    bg: ()=>'#0a1628',
+    bgl:()=>'#F5EDCC',
+    dec:()=>`<div style="position:absolute;inset:0;background:linear-gradient(140deg,transparent 0%,transparent 52%,rgba(27,48,104,.85) 52%,rgba(27,48,104,.85) 100%);z-index:1;pointer-events:none;"></div>
+             <div style="position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 80px 80px 0;border-color:transparent rgba(196,169,107,.13) transparent transparent;z-index:3;pointer-events:none;"></div>`,
+    hl:'26px', layout:'sb-sb', dn:true, dno:0.05 },
+];
+
+// Profundidade de fundo — cicla em 3 níveis baseado em slideIndex % 3
+function depthBg(slideIndex) {
+  const level = slideIndex % 3;
+  if (level === 1) return 'linear-gradient(135deg,#04080f 0%,#0d1a32 100%)'; // mais escuro
+  if (level === 2) return 'linear-gradient(135deg,#020406 0%,#080f1e 100%)'; // mais profundo
+  return null; // nível 0: usa bg padrão do modo
+}
+
+// ============================================================
+// ESTADO
+// ============================================================
+let curType   = 'carousel';
+let numSlides = 6;
+let modeHist  = []; // evitar repetição consecutiva de modos
+
+const USE_SC = ['carousel','countdown'];
+
+function selT(t, el) {
+  curType = t;
+  document.querySelectorAll('.tB').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('fs').style.display = USE_SC.includes(t) ? 'flex' : 'none';
+}
+document.getElementById('fs').style.display = 'flex';
+
+function chgS(d) {
+  numSlides = Math.min(12, Math.max(3, numSlides+d));
+  document.getElementById('scn').textContent = numSlides;
+}
+
+// ============================================================
+// SELEÇÃO DE MODO VISUAL
+// ============================================================
+function pickMode(idx, type, slide) {
+  // Modo sugerido pela API tem prioridade quando válido
+  const VALID = ['A','B','C','D','E','F','G','H'];
+  if (slide?.suggested_mode && VALID.includes(slide.suggested_mode)) {
+    return VM.find(m=>m.id===slide.suggested_mode);
+  }
+  if (type === 'cta')   return VM.find(m=>m.id==='F');  // Frame para CTA
+  if (type === 'gancho') {
+    const pow = ['A','D','G','H'];
+    return VM.find(m=>m.id===pow[idx % pow.length]);
+  }
+  // Fallback: roda pelos 8 modos evitando repetir os 2 últimos
+  const avail = VM.filter(m=>!modeHist.slice(-2).includes(m.id));
+  const picked = avail[idx % avail.length];
+  modeHist = [...modeHist.slice(-5), picked.id];
+  return picked;
+}
+
+// ============================================================
+// GERAR CONTEÚDO
+// ============================================================
+async function gen() {
+  const idea = document.getElementById('fid').value.trim();
+  const th   = document.getElementById('fth').value;
+  const ref  = document.getElementById('fref').value.trim();
+  if (!idea)  { showM('Escreva a ideia antes de gerar.','er'); return; }
+  if (!getApiKey()) { showM('Configure sua chave da API Anthropic no campo acima.','er'); return; }
+  setL(true); clearM(); modeHist = [];
+
+  try {
+    const raw  = await api(MHF_CTX, prompt(curType, th, idea, numSlides, ref), 2500);
+    const data = parseJ(raw);
+    render(curType, data, th);
+    salvarHistorico(curType, data, th);
+    try { localStorage.setItem('mhf_last_gen', JSON.stringify({type:curType, th, idea, data})); } catch(_){}
+  } catch(e) {
+    showM('Erro: '+e.message,'er');
+  } finally {
+    setL(false);
+  }
+}
+
+// ============================================================
+// GERAR VISUAL SVG
+// ============================================================
+async function genVis(id, hint) {
+  const btn = document.querySelector(`[data-v="${id}"]`);
+  if (btn) { btn.textContent='⏳'; btn.disabled=true; }
+
+  const sys = `Você é designer de arte abstrata geométrica para slides de Instagram.
+Retorne APENAS código SVG puro começando com <svg, sem texto, sem markdown.
+Cores exclusivas: #1B3068 (navy), #C4A96B (dourado), #0f1d3e (navy dark), #243d80 (navy médio), #F5EDCC (cream apenas como toque sutil).
+Dimensões: 245x245. Apenas geometria: linhas, círculos, triângulos, retângulos, polígonos.
+Estilo: abstrato, minimalista, tech, moderno. Nunca figuras reconhecíveis.`;
+
+  const usr = `Arte abstrata geométrica. Tema visual: ${hint}. viewBox="0 0 245 245".
+Use formas geométricas variadas. Cores: #1B3068, #C4A96B, #0f1d3e. Minimalista e elegante.`;
+
+  try {
+    const svg = await api(sys, usr, 1200);
+    const cl  = svg.trim();
+    if (!cl.startsWith('<svg')) throw new Error('SVG inválido');
+    const sl = document.getElementById(id);
+    if (sl) {
+      let sv = sl.querySelector('.svgl');
+      if (!sv) { sv=document.createElement('div'); sv.className='svgl'; sl.insertBefore(sv,sl.firstChild); }
+      sv.innerHTML = cl.replace('<svg','<svg style="width:100%;height:100%;position:absolute;inset:0;"');
+      let ov = sl.querySelector('.svgo');
+      if (!ov) { ov=document.createElement('div'); ov.className='svgo'; sl.insertBefore(ov,sv.nextSibling); }
+    }
+    if (btn) { btn.textContent='✦ ✓'; btn.style.color='var(--gold)'; btn.style.borderColor='var(--gold)'; }
+  } catch(e) {
+    showM('Erro visual: '+e.message,'er');
+    if (btn) { btn.textContent='✦ Visual'; btn.disabled=false; }
+  }
+}
+
+// ============================================================
+// API — FIX #1 #2 #3: headers corretos
+// ============================================================
+async function api(system, user, max=1500) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': getApiKey(),                             // FIX #1
+      'anthropic-version':'2023-06-01',                   // FIX #2
+      'anthropic-dangerous-direct-browser-access':'true'  // FIX #3
+    },
+    body: JSON.stringify({ model:MODEL, max_tokens:max, system, messages:[{role:'user',content:user}] })
+  });
+  if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${r.status}`); }
+  const d = await r.json();
+  return d.content.find(b=>b.type==='text')?.text||'';
+}
+
+// FIX #6: extrai JSON pelo primeiro { e último }
+function parseJ(raw) {
+  const s=raw.indexOf('{'), e=raw.lastIndexOf('}');
+  if (s===-1||e===-1) throw new Error('Resposta fora do formato. Tente novamente.');
+  try { return JSON.parse(raw.slice(s,e+1)); }
+  catch { throw new Error('JSON inválido. Tente novamente.'); }
+}
+
+// ============================================================
+// PROMPTS — FIX #5 + framework de copy embutido
+// ============================================================
+// FIX #5: gera templates explícitos para TODOS os slides
+function slideTemplates(n) {
+  return Array.from({length:n},(_,i)=>{
+    const num = i+1;
+    if (num===1) return `{"number":1,"type":"gancho","suggested_mode":"A","tag":"máx 4 palavras","headline":"GANCHO PODEROSO — tensão ou identificação IMEDIATA (máx 5 palavras)","sub":"subtítulo que aprofunda a tensão (máx 7 palavras, pode ser vazio)"}`;
+    if (num===n) return `{"number":${n},"type":"cta","suggested_mode":"F","headline":"CHAMADA FINAL com benefício claro (máx 5 palavras)","body":"por que agir AGORA — não genérico (máx 18 palavras)","cta_label":"texto do botão, máx 4 palavras"}`;
+    return `{"number":${num},"type":"conteudo","suggested_mode":"A","tag":"palavra-chave do bloco (máx 3 palavras)","headline":"PONTO ESPECÍFICO (máx 5 palavras)","body":"dado plausível + cenário concreto (máx 18 palavras)","result":"consequência direta (máx 10 palavras, pode ser vazio)"}`;
+  }).join(',\n');
+}
+
+function prompt(type, th, idea, n, ref='') {
+
+  const VOZ = {
+    provocacao:     'mais afiado — afirmações que incomodam, o leitor deve questionar o que faz agora',
+    urgencia:       'sério e factual — dados e consequências concretas de não agir, sem drama, só realidade',
+    educativo:      'claro e aplicável — o leitor sai sabendo fazer algo que não sabia antes',
+    bastidores:     'humano e pessoal — parceiro construindo junto, menos formal, mais real',
+    desmistificacao:'direto ao mito — destrói a crença errada com argumento simples e irrefutável',
+    captacao:       'dor específica primeiro, solução depois — nunca ao contrário',
+    posicionamento: 'confiante, sem se justificar — a MHF sabe do que fala e isso aparece no texto',
+  };
+  const vozInstr = VOZ[th] ? `TOM NESTE CONTEÚDO: ${VOZ[th]}` : 'TOM: padrão MHF — parceiro direto, técnico mas humano';
+
+  const copyRules = `${vozInstr}
+
+ANTES DE ESCREVER, defina mentalmente:
+- Qual situação específica do leitor este conteúdo vai ativar?
+- Qual dado ou cenário vai tornar isso irrefutável?
+- Qual é a virada — o momento em que ele enxerga diferente?
+- Por que ele vai salvar ou compartilhar isso?
+
+REGRAS: especificidade obrigatória, dados plausíveis, zero jargão, gancho que cria tensão em 1 frase.
+Respeite os limites de palavras por campo.`;
+
+  const refBlock = ref ? `
+REFERÊNCIA DE ESTILO FORNECIDA PELO USUÁRIO:
+"${ref}"
+
+Analise o tom, ritmo, estrutura de frase e nível de ousadia dessa referência.
+Use como norte criativo — não copie, mas escreva com a mesma energia e abordagem.
+Se a referência for direta e provocativa, seja direto e provocativo.
+Se for técnica e séria, mantenha esse registro.
+Se for humana e pessoal, adote esse calor.
+A referência define o COMO escrever, não o QUÊ escrever.
+` : '';
+
+  if (type==='carousel') return `${copyRules}
+${refBlock}
+CARROSSEL de ${n} slides para Instagram da MHF Partners.
+Tema: ${th} | Ideia: ${idea}
+
+MODOS VISUAIS — preencha suggested_mode em cada slide:
+A=editorial limpo · B=sidebar vertical · C=concêntrico · D=dark puro · E=número hero · F=frame · G=corner-L · H=diagonal
+Regra: gancho → A, D, G ou H | dado estatístico → E | virada/insight → D ou G | construção lógica → A ou B | CTA → F (fixo).
+
+REGRA CRÍTICA DE ESPAÇO: os slides têm dimensão física limitada. Textos longos serão cortados e ficam ruins visualmente. Escreva sempre abaixo do limite — é melhor um body de 12 palavras perfeito do que 18 palavras cortadas. Prefira precisão a completude.
+
+Retorne JSON com TODOS os ${n} slides — não deixe nenhum de fora:
+{"slides":[
+${slideTemplates(n)}
+],"caption":"legenda com hook, argumento e CTA específico (com quebras de linha)","hashtags":["h1","h2","h3","h4","h5"],"visual_suggestion":"descrição do visual abstrato ideal para capa — máx 15 palavras"}`;
+
+  if (type==='static') return `${copyRules}
+${refBlock}
+POST ESTÁTICO para Instagram da MHF Partners.
+Tema: ${th} | Ideia: ${idea}
+LIMITES: tag máx 4 palavras, headline máx 5 palavras MAIÚSCULAS, body máx 18 palavras.
+
+JSON: {"tag":"","headline":"HEADLINE QUE PARA O SCROLL","body":"dado + cenário concreto","caption":"legenda com hook, argumento e CTA específico","hashtags":["h1","h2","h3","h4","h5"],"visual_suggestion":"máx 15 palavras"}`;
+
+  if (type==='reels') return `${copyRules}
+${refBlock}
+ROTEIRO DE REELS para Instagram da MHF Partners. Duração 30-60s.
+Tema: ${th} | Ideia: ${idea}
+LIMITES: narration máx 20 palavras por cena, scene máx 15 palavras.
+
+Estrutura obrigatória:
+- Cena 1 (3-5s): gancho que PARA o scroll — frase única, tensão ou dado chocante
+- Cenas do meio: construção lógica com dado + cenário concreto
+- Última cena: CTA com benefício real — por que agir agora?
+
+JSON: {"total_duration":"ex: 45s","scenes":[{"number":1,"duration":"4s","narration":"o que falar","scene":"o que mostrar / texto sobreposto / ângulo"}],"caption":"legenda com hook + argumento + CTA","hashtags":["h1","h2","h3","h4","h5"]}`;
+
+  if (type==='stories') return `${copyRules}
+${refBlock}
+SEQUÊNCIA DE STORIES (5-7 stories) para Instagram da MHF Partners.
+Tema: ${th} | Ideia: ${idea}
+LIMITES: headline máx 5 palavras MAIÚSCULAS, body máx 18 palavras, interaction máx 8 palavras.
+
+Estrutura obrigatória:
+- Story 1 (abertura): UMA frase que cria tensão ou reconhecimento IMEDIATO. Não explique — instigue.
+  Exemplo de força: "Você está gerenciando um emprego, não um negócio."
+- Stories 2 a N-1: cada um aumenta a tensão OU entrega uma virada com dado concreto. Nunca neutros.
+- Último story: virada completa + razão REAL para agir agora.
+
+MODOS VISUAIS — preencha suggested_mode em cada story:
+A=editorial · D=dark · G=corner-L · H=diagonal → abertura; E=número hero → dado estatístico; F=frame → CTA.
+
+REGRA CRÍTICA DE ESPAÇO: os slides têm dimensão física limitada. Textos longos serão cortados e ficam ruins visualmente. Escreva sempre abaixo do limite — é melhor um body de 12 palavras perfeito do que 18 palavras cortadas. Prefira precisão a completude.
+
+JSON: {"stories":[{"number":1,"type":"abertura|conteudo|cta","suggested_mode":"A","tag":"máx 3 palavras","headline":"HEADLINE","body":"texto direto com dado concreto ou vazio","interaction":"enquete / pergunta específica / vazio"}],"caption":"legenda com argumento completo","hashtags":["h1","h2","h3"]}`;
+
+  if (type==='antesdepois') return `${copyRules}
+${refBlock}
+CARROSSEL ANTES & DEPOIS para Instagram da MHF Partners. 4 slides fixos.
+Tema: ${th} | Ideia: ${idea}
+LIMITES: headlines máx 5 palavras, items máx 10 palavras, máx 3 items por coluna, sub máx 7 palavras.
+
+O "Antes" deve doer — use situações que o leitor reconhece.
+O "Depois" deve ser específico — não "mais tempo", mas "3h por dia de volta".
+
+REGRA CRÍTICA DE ESPAÇO: os slides têm dimensão física limitada. Textos longos serão cortados e ficam ruins visualmente. Escreva sempre abaixo do limite — é melhor um body de 12 palavras perfeito do que 18 palavras cortadas. Prefira precisão a completude.
+
+JSON: {"slides":[
+{"number":1,"type":"gancho","suggested_mode":"A","tag":"máx 4 palavras","headline":"HEADLINE QUE CRIA DOR IMEDIATA (máx 5 palavras)","sub":"subtítulo ou vazio (máx 7 palavras)"},
+{"number":2,"type":"antes","suggested_mode":"D","headline":"ANTES","before_items":["item conciso — máx 10 palavras","item 2","item 3"]},
+{"number":3,"type":"depois","suggested_mode":"G","headline":"COM A MHF","after_items":["resultado específico — máx 10 palavras","resultado 2","resultado 3"]},
+{"number":4,"type":"cta","suggested_mode":"F","headline":"PRÓXIMA SEMANA PODE SER DIFERENTE","body":"por que agir agora (máx 18 palavras)","cta_label":"Link na bio"}
+],"caption":"legenda com argumento completo","hashtags":["h1","h2","h3","h4","h5"],"visual_suggestion":"máx 15 palavras"}`;
+
+  if (type==='checklist') return `${copyRules}
+${refBlock}
+CHECKLIST para Instagram da MHF Partners.
+Tema: ${th} | Ideia: ${idea}
+LIMITES: headline máx 5 palavras, items máx 10 palavras, máx 6 items, conclusion máx 12 palavras.
+
+O headline deve criar identificação imediata — o leitor deve pensar "esse sou eu".
+Os items devem ser situações reconhecíveis, não abstratas.
+
+JSON: {"headline":"VOCÊ AINDA FAZ ISSO NA MÃO? (ou similar que cria identificação)","items":[{"text":"situação concreta que o leitor reconhece","check":false}],"conclusion":"frase de fechamento com dado ou argumento","caption":"legenda com argumento completo","hashtags":["h1","h2","h3","h4","h5"],"visual_suggestion":"máx 15 palavras"}`;
+
+  if (type==='countdown') {
+    const numItems = n - 2; // itens entre gancho e CTA
+    const midTemplates = Array.from({length: numItems}, (_,i) => {
+      const slideNum = i + 2;
+      const position = numItems - i; // REGRESSIVA: primeiro item = numItems, último = 1
+      return `{"number":${slideNum},"type":"item","suggested_mode":"A","position":${position},"headline":"ITEM ${position} — ESPECÍFICO (máx 5 palavras)","body":"dado plausível + cenário real (máx 18 palavras)"}`;
+    }).join(',\n');
+    return `${copyRules}
+${refBlock}
+COUNTDOWN / SEQUÊNCIA NUMERADA para Instagram da MHF Partners. EXATAMENTE ${n} slides — gere TODOS, não deixe nenhum de fora.
+Tema: ${th} | Ideia: ${idea}
+LIMITES: headlines máx 5 palavras, body máx 18 palavras, sub máx 7 palavras.
+
+A contagem é REGRESSIVA — começa no número mais alto (${numItems}) e termina em 1. Isso cria expectativa crescente.
+O item com position 1 deve ser o mais impactante e acionável de todos, pois é o que o leitor vai lembrar.
+Cada item deve ser específico e acionável — sem generalidades.
+
+MODOS VISUAIS — preencha suggested_mode em cada slide:
+A=editorial · B=sidebar · C=concêntrico · D=dark · E=número hero · F=frame · G=corner-L · H=diagonal
+Gancho → A, D, G ou H | item com dado → E | item com insight → D ou G | item de construção → A ou B | CTA → F (fixo).
+
+REGRA CRÍTICA DE ESPAÇO: os slides têm dimensão física limitada. Textos longos serão cortados e ficam ruins visualmente. Escreva sempre abaixo do limite — é melhor um body de 12 palavras perfeito do que 18 palavras cortadas. Prefira precisão a completude.
+
+JSON: {"slides":[
+{"number":1,"type":"gancho","suggested_mode":"A","tag":"máx 4 palavras","headline":"HEADLINE DE ABERTURA QUE CRIA EXPECTATIVA (máx 5 palavras)","sub":"subtítulo ou vazio (máx 7 palavras)"},
+${midTemplates},
+{"number":${n},"type":"cta","suggested_mode":"F","headline":"AGORA É SUA VEZ","body":"por que agir agora (máx 18 palavras)","cta_label":"Link na bio"}
+],"caption":"legenda com hook + argumento + CTA","hashtags":["h1","h2","h3","h4","h5"],"visual_suggestion":"máx 15 palavras"}`;
+  }
+}
+
+// ============================================================
+// RENDERIZAÇÃO
+// ============================================================
+const TL={carousel:'Carrossel',static:'Post Estático',reels:'Reels',stories:'Stories',antesdepois:'Antes & Depois',checklist:'Checklist',countdown:'Countdown'};
+const THl={educativo:'Educativo',posicionamento:'Posicionamento',captacao:'Captação',bastidores:'Bastidores',desmistificacao:'Desmistificação',urgencia:'Urgência',apresentacao:'Apresentação',ferramentas:'Ferramentas',tendencia:'Tendência',provocacao:'Provocação',livre:'Livre'};
+
+function render(type, data, th, autoVis=true) {
+  const out=document.getElementById('out');
+  document.getElementById('em').style.display='none';
+  out.style.display='block';
+
+  let h=`<div class="ph"><div><div class="pt">${TL[type]||type}</div><div class="ps">${THl[th]||th} · MHF Partners</div></div><button class="bda" onclick="dlAll()">⬇ Baixar tudo</button></div>`;
+
+  const slider = ['carousel','antesdepois','countdown'];
+  if (slider.includes(type)) h+=mkSlides(data);
+  else if (type==='static')   h+=mkStatic(data);
+  else if (type==='reels')    h+=mkReels(data);
+  else if (type==='stories')  h+=mkStories(data);
+  else if (type==='checklist')h+=mkChecklist(data);
+
+  out.innerHTML=h;
+
+  // Auto-gerar visual da capa (apenas em geração nova, não ao restaurar)
+  if (data.visual_suggestion && autoVis) {
+    const first=out.querySelector('.igs[id]');
+    if (first) setTimeout(()=>genVis(first.id,data.visual_suggestion),350);
+  }
+}
+
+// ── Slides genérico ─────────────────────────────────────────
+function mkSlides(data) {
+  const tot=data.slides.length;
+  let h='<div class="sg">';
+  data.slides.forEach((s,i)=>{
+    const id=`s${i}`;
+    const vs=data.visual_suggestion||'abstrato geométrico tech';
+    h+=`<div class="sw"><div class="sa"><span class="nl">Slide ${s.number}</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_slide_${String(s.number).padStart(2,'0')}')">⬇</button></div></div>`;
+    h+=mkSlide(s,tot,id);
+    h+='</div>';
+  });
+  h+='</div>';
+  h+=mkCap(data.caption,data.hashtags);
+  return h;
+}
+
+// ── Render de um slide com modo visual ─────────────────────
+function mkSlide(s, tot, id, stry=false) {
+  const idx   = parseInt(id.replace(/\D/g,''))||0;
+  const isLt  = s.type==='cta';
+  const mode  = pickMode(idx, s.type, s);
+  let   bg    = isLt ? mode.bgl() : mode.bg();
+  // Profundidade de fundo — aplica a todos os tipos de conteúdo (exceto gancho e cta)
+  const DEPTH_TYPES = new Set(['conteudo','item','resultado','situacao','solucao','antes','depois']);
+  if (DEPTH_TYPES.has(s.type) && !isLt) {
+    const db = depthBg(idx);
+    if (db) bg = db;
+  }
+  const decos = mode.dec(isLt);
+  const cls   = `igs ${stry?'story ':''} ${isLt?'light':'dark'}`;
+  const sn    = `${String(s.number).padStart(2,'0')} / ${tot}`;
+
+  // Deco num
+  const dnStyle = mode.dn ? `position:absolute;bottom:-4px;right:6px;font-family:'Barlow Condensed',sans-serif;font-weight:800;line-height:1;letter-spacing:-3px;pointer-events:none;z-index:2;user-select:none;font-size:${mode.dns||'72px'};color:${isLt?`rgba(27,48,104,${mode.dno||0.04})`:`rgba(245,237,204,${mode.dno||0.04})`};` : '';
+  const dnEl = mode.dn ? `<div style="${dnStyle}">${String(s.number).padStart(2,'0')}</div>` : '';
+
+  // Padding-left extra para mode B (sidebar)
+  const pl = mode.id==='B' ? '28px' : '20px';
+
+  // Layout do slide-body
+  let sbStyle=`padding-left:${pl};`;
+  if (mode.layout==='sb-center') sbStyle+='justify-content:center;align-items:center;text-align:center;';
+  else if (mode.layout==='sb-top') sbStyle+='justify-content:flex-start;gap:8px;';
+  else if (mode.layout==='sb-bottom') sbStyle+='justify-content:flex-end;';
+  else sbStyle+='justify-content:space-between;';
+
+  // SVG overlay intensity
+  const ovBg = isLt
+    ? 'linear-gradient(135deg,rgba(245,237,204,.86) 0%,rgba(245,237,204,.6) 100%)'
+    : 'linear-gradient(135deg,rgba(6,12,28,.8) 0%,rgba(6,12,28,.42) 100%)';
+
+  const base = `<div class="${cls}" id="${id}">
+    <div class="bgl" style="background:${bg};"></div>
+    <div class="svgl"></div>
+    <div class="svgo" style="background:${ovBg};"></div>
+    ${decos}
+    <span class="sn">${sn}</span>
+    ${dnEl}`;
+
+  const wm = `<div class="wm"><b>MHF</b> Partners</div></div>`;
+  const hl = mode.hl;
+  const center = mode.layout==='sb-center';
+  const glM = center?'margin:7px auto 0':'margin-top:5px';
+
+  if (s.type==='gancho') {
+    return base+`<div class="sb" style="${sbStyle}">${center?'':''}
+      <div>
+        <div data-f="tag" contenteditable="true">${s.tag||''}</div>
+        <div class="gl" style="${glM};"></div>
+        <div data-f="headline" contenteditable="true" style="font-size:${hl};margin-top:5px;">${s.headline}</div>
+        ${s.sub?`<div data-f="sub" contenteditable="true">${s.sub}</div>`:''}
+      </div>
+    </div>`+wm;
+  }
+
+  if (s.type==='cta') {
+    return base+`<div class="sb" style="justify-content:center;align-items:center;text-align:center;padding-left:20px;">
+      <div>
+        <div data-f="tag" contenteditable="true" style="font-size:6.5px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);">Próximo passo</div>
+        <div class="gl" style="margin:7px auto 0;"></div>
+        <div data-f="headline" contenteditable="true" style="font-size:23px;margin-top:5px;${isLt?'color:var(--navy);':''}">${s.headline}</div>
+        <div data-f="body" contenteditable="true" style="${isLt?'color:rgba(27,48,104,.6);':''}margin-top:5px;">${s.body||''}</div>
+        <div class="cp" contenteditable="true">${s.cta_label||'Link na bio'}</div>
+      </div>
+    </div><div class="wm"><b>MHF</b> Partners</div></div>`;
+  }
+
+  if (s.type==='antes') {
+    const items=(s.before_items||[]).map(it=>`<div class="cli"><span class="ci" style="color:#e07070;">✗</span><div class="ct" contenteditable="true">${it}</div></div>`).join('');
+    return base+`<div class="sb" style="${sbStyle}"><div><div data-f="tag" contenteditable="true" style="color:#e07070;">ANTES</div><div class="gl" style="margin-top:5px;background:#e07070;"></div><div data-f="headline" contenteditable="true" style="font-size:${hl};">${s.headline||'SEM AUTOMAÇÃO'}</div></div><div>${items}</div></div>`+wm;
+  }
+
+  if (s.type==='depois') {
+    const items=(s.after_items||[]).map(it=>`<div class="cli"><span class="ci" style="color:#70c97a;">✓</span><div class="ct" contenteditable="true">${it}</div></div>`).join('');
+    return base+`<div class="sb" style="${sbStyle}"><div><div data-f="tag" contenteditable="true" style="color:#70c97a;">DEPOIS</div><div class="gl" style="margin-top:5px;background:#70c97a;"></div><div data-f="headline" contenteditable="true" style="font-size:${hl};">${s.headline||'COM A MHF'}</div></div><div>${items}</div></div>`+wm;
+  }
+
+  if (s.type==='item') {
+    return base+`<div class="sb" style="${sbStyle}"><div><div data-f="num" contenteditable="true" class="cnt-n">${s.position||s.number}</div><div class="gl" style="margin-top:4px;"></div><div data-f="headline" contenteditable="true" style="font-size:${hl};">${s.headline}</div></div><div data-f="body" contenteditable="true" style="margin-top:6px;">${s.body||''}</div></div>`+wm;
+  }
+
+  // Melhoria 1: 3 variações de hierarquia tipográfica para conteudo/resultado
+  if (s.type==='conteudo'||s.type==='resultado') {
+    const vIdx = (idx - 1 + 3) % 3; // 0=A, 1=B, 2=C — cicla por posição
+    const rb   = s.result ? `<div class="rb"><div class="rl">Resultado</div><div data-f="result" contenteditable="true">${s.result}</div></div>` : '';
+    // Headline em slides de conteúdo: cap em 22px + 3 linhas para não transbordar
+    const chl  = Math.min(parseInt(hl), 22) + 'px';
+    const hlSt = `font-size:${chl};-webkit-line-clamp:3;line-clamp:3;`;
+
+    if (vIdx===1) {
+      // B: número editorial grande → linha → headline → body (sem tag)
+      return base+`<div class="sb" style="${sbStyle}">
+        <div>
+          <div data-f="num" contenteditable="true" style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:800;line-height:1;color:var(--gold);opacity:.75;letter-spacing:-2px;cursor:text;">${String(s.number).padStart(2,'0')}</div>
+          <div class="gl" style="margin-top:5px;"></div>
+          <div data-f="headline" contenteditable="true" style="${hlSt}margin-top:5px;">${s.headline}</div>
+        </div>
+        <div><div data-f="body" contenteditable="true">${s.body||''}</div>${rb}</div>
+      </div>`+wm;
+    }
+
+    if (vIdx===2) {
+      // C: body como intro acima → linha → headline como conclusão abaixo
+      return base+`<div class="sb" style="padding-left:${pl};justify-content:space-between;">
+        <div><div data-f="body" contenteditable="true" style="font-style:italic;opacity:.72;">${s.body||''}</div></div>
+        <div>
+          <div class="gl" style="margin-bottom:6px;"></div>
+          <div data-f="headline" contenteditable="true" style="${hlSt}">${s.headline}</div>
+          ${rb}
+        </div>
+      </div>`+wm;
+    }
+
+    // A (padrão, vIdx=0): tag → linha → headline → body
+    return base+`<div class="sb" style="${sbStyle}">
+      <div>
+        <div data-f="tag" contenteditable="true">${s.tag||''}</div>
+        <div class="gl" style="margin-top:5px;"></div>
+        <div data-f="headline" contenteditable="true" style="${hlSt}">${s.headline}</div>
+      </div>
+      <div><div data-f="body" contenteditable="true">${s.body||''}</div>${rb}</div>
+    </div>`+wm;
+  }
+
+  // fallback genérico (situcao, solucao, tipos não mapeados)
+  return base+`<div class="sb" style="${sbStyle}"><div><div data-f="tag" contenteditable="true">${s.tag||''}</div><div class="gl" style="margin-top:5px;"></div><div data-f="headline" contenteditable="true" style="font-size:${hl};">${s.headline}</div></div><div><div data-f="body" contenteditable="true">${s.body||''}</div>${s.result?`<div class="rb"><div class="rl">Resultado</div><div data-f="result" contenteditable="true">${s.result}</div></div>`:''}</div></div>`+wm;
+}
+
+// ── Post Estático ────────────────────────────────────────────
+function mkStatic(data) {
+  const id='st0', vs=data.visual_suggestion||'abstrato geométrico tech';
+  const mode=pickMode(0,'gancho',null);
+  const bg=mode.bg();
+  const decos=mode.dec(false);
+  const ovBg='linear-gradient(135deg,rgba(6,12,28,.78) 0%,rgba(6,12,28,.4) 100%)';
+  return `<div class="stl"><div>
+    <div class="sa" style="margin-bottom:6px;"><span class="nl">Post Estático</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_post_estatico')">⬇</button></div></div>
+    <div class="igs dark" id="${id}">
+      <div class="bgl" style="background:${bg};"></div><div class="svgl"></div>
+      <div class="svgo" style="background:${ovBg};"></div>
+      ${decos}
+      <div class="sb" style="justify-content:center;">
+        <div>
+          <div data-f="tag" contenteditable="true">${data.tag||''}</div>
+          <div class="gl" style="margin-top:5px;"></div>
+          <div data-f="headline" contenteditable="true" style="font-size:25px;">${data.headline}</div>
+          <div data-f="body" contenteditable="true" style="margin-top:8px;">${data.body||''}</div>
+        </div>
+      </div>
+      <div class="wm"><b>MHF</b> Partners</div>
+    </div>
+  </div>
+  <div class="stls">
+    ${mkCap(data.caption,data.hashtags,true)}
+    <div class="vc"><span class="vcl">Sugestão Visual</span><div contenteditable="true">${vs}</div></div>
+  </div></div>`;
+}
+
+// ── Reels ────────────────────────────────────────────────────
+function mkReels(data) {
+  let h=`<div style="margin-bottom:6px;font-size:10.5px;color:var(--mu);">⏱ <strong style="color:var(--gold)">${data.total_duration}</strong></div><div class="rw">`;
+  (data.scenes||[]).forEach(s=>{
+    h+=`<div class="rc"><div class="rh"><span class="rn">Cena ${s.number}</span><span class="rd">${s.duration}</span></div><div class="rb2"><div class="rc2"><label>Narração</label><div contenteditable="true">${s.narration}</div></div><div class="rc2"><label>Visual / Cena</label><div contenteditable="true" style="color:var(--mu);">${s.scene}</div></div></div></div>`;
+  });
+  h+='</div>';
+  h+=mkCap(data.caption,data.hashtags);
+  return h;
+}
+
+// ── Stories ──────────────────────────────────────────────────
+function mkStories(data) {
+  let h='<div class="sg">';
+  (data.stories||[]).forEach((s,i)=>{
+    const id=`st${i}`;
+    const isLt=s.type==='cta';
+    const mode=pickMode(i,s.type==='abertura'?'gancho':s.type,s);
+    const bg=isLt?mode.bgl():mode.bg();
+    const decos=mode.dec(isLt);
+    const ovBg=isLt
+      ?'linear-gradient(135deg,rgba(245,237,204,.86) 0%,rgba(245,237,204,.6) 100%)'
+      :'linear-gradient(135deg,rgba(6,12,28,.8) 0%,rgba(6,12,28,.42) 100%)';
+    const dnStyle=mode.dn?`position:absolute;bottom:-4px;right:6px;font-family:'Barlow Condensed',sans-serif;font-weight:800;line-height:1;letter-spacing:-3px;pointer-events:none;z-index:2;user-select:none;font-size:125px;color:${isLt?`rgba(27,48,104,${mode.dno||0.04})`:`rgba(245,237,204,${mode.dno||0.04})`};`:'' ;
+    const dnEl=mode.dn?`<div style="${dnStyle}">${String(s.number).padStart(2,'0')}</div>`:'';
+    const center=isLt||mode.layout==='sb-center';
+    h+=`<div class="sw"><div class="sa"><span class="nl">Story ${s.number}</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','visual abstrato geométrico tech')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_story_${String(s.number).padStart(2,'0')}')">⬇</button></div></div>
+    <div class="igs story ${isLt?'light':'dark'}" id="${id}">
+      <div class="bgl" style="background:${bg};"></div><div class="svgl"></div>
+      <div class="svgo" style="background:${ovBg};"></div>
+      ${decos}
+      <span class="sn">${s.type.toUpperCase()}</span>
+      ${dnEl}
+      <div class="sb" style="${center?'justify-content:center;align-items:center;text-align:center;':'justify-content:space-between;'}">
+        <div>
+          ${s.tag?`<div data-f="tag" contenteditable="true">${s.tag}</div><div class="gl" style="margin-top:5px;${center?'margin-left:auto;margin-right:auto;':''}"></div>`:''}
+          <div data-f="headline" contenteditable="true" style="${isLt?'color:var(--navy);':''}margin-top:4px;">${s.headline}</div>
+          ${s.body?`<div data-f="body" contenteditable="true" style="${isLt?'color:rgba(27,48,104,.6);':''}margin-top:7px;">${s.body}</div>`:''}
+          ${s.interaction?`<div contenteditable="true" style="margin-top:9px;padding:5px 8px;border:1px dashed rgba(196,169,107,.38);border-radius:3px;font-size:8px;color:var(--gold);">🎯 ${s.interaction}</div>`:''}
+        </div>
+      </div>
+      <div class="wm"><b>MHF</b> Partners</div>
+    </div></div>`;
+  });
+  h+='</div>';
+  h+=mkCap(data.caption,data.hashtags);
+  return h;
+}
+
+// ── Checklist ────────────────────────────────────────────────
+function mkChecklist(data) {
+  const id='ch0', vs=data.visual_suggestion||'abstrato geométrico';
+  const mode=pickMode(0,'gancho',null);
+  const bg=mode.bg(), decos=mode.dec(false);
+  const ovBg='linear-gradient(135deg,rgba(6,12,28,.78) 0%,rgba(6,12,28,.4) 100%)';
+  const items=(data.items||[]).map(it=>`<div class="cli"><span class="ci" style="color:${it.check?'#70c97a':'#e07070'};">${it.check?'✓':'✗'}</span><div class="ct" contenteditable="true">${it.text}</div></div>`).join('');
+  return `<div class="stl"><div>
+    <div class="sa" style="margin-bottom:6px;"><span class="nl">Checklist</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_checklist')">⬇</button></div></div>
+    <div class="igs dark" id="${id}">
+      <div class="bgl" style="background:${bg};"></div><div class="svgl"></div>
+      <div class="svgo" style="background:${ovBg};"></div>
+      ${decos}
+      <div class="sb" style="justify-content:space-between;">
+        <div><div class="gl"></div><div data-f="headline" contenteditable="true" style="font-size:21px;">${data.headline}</div></div>
+        <div>${items}<div contenteditable="true" style="margin-top:7px;font-size:8.5px;font-weight:600;color:var(--gold);font-style:italic;">${data.conclusion||''}</div></div>
+      </div>
+      <div class="wm"><b>MHF</b> Partners</div>
+    </div>
+  </div>
+  <div class="stls">
+    ${mkCap(data.caption,data.hashtags,true)}
+    <div class="vc"><span class="vcl">Sugestão Visual</span><div contenteditable="true">${vs}</div></div>
+  </div></div>`;
+}
+
+// ── Caption block ─────────────────────────────────────────────
+function mkCap(cap, tags, inline=false) {
+  const t=(tags||[]).map(h=>`<span class="htt">${h.startsWith('#')?h:'#'+h}</span>`).join('');
+  return `<div class="cap"${inline?'':' style="margin-top:4px;"'}><span class="cl">Legenda</span><div contenteditable="true">${(cap||'').replace(/\n/g,'<br>')}</div>${t?`<div class="ht">${t}</div>`:''}</div>`;
+}
+
+// ============================================================
+// DOWNLOAD PNG — escala para 1080px
+// ============================================================
+async function dl(id, name) {
+  const el=document.getElementById(id);
+  if (!el) return;
+  const btn=document.querySelector(`.bd[onclick*="${id}"]`);
+  if (btn){btn.textContent='⏳';btn.disabled=true;}
+  try {
+    const scale=Math.round(1080/el.offsetWidth*100)/100;
+    const c=await html2canvas(el,{scale,useCORS:true,backgroundColor:null,logging:false});
+    const a=document.createElement('a');
+    a.download=`${name}.png`;a.href=c.toDataURL('image/png');a.click();
+  } catch(e){showM('Erro ao exportar: '+e.message,'er');}
+  finally{if(btn){btn.textContent='⬇';btn.disabled=false;}}
+}
+
+async function dlAll() {
+  const all=document.querySelectorAll('.igs[id]');
+  const btn=document.querySelector('.bda');
+  if(btn){btn.textContent='⏳ Baixando...';btn.disabled=true;}
+  for(let i=0;i<all.length;i++){
+    await dl(all[i].id,`mhf_${String(i+1).padStart(2,'0')}`);
+    await new Promise(r=>setTimeout(r,440));
+  }
+  if(btn){btn.textContent='⬇ Baixar tudo';btn.disabled=false;}
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function setL(on){document.getElementById('bgen').disabled=on;document.getElementById('sp').style.display=on?'block':'none';document.getElementById('bl').textContent=on?'Gerando...':'Gerar conteúdo';}
+function showM(t,c){const e=document.getElementById('msg');e.textContent=t;e.className=`mg ${c}`;}
+function clearM(){const e=document.getElementById('msg');e.className='mg';e.textContent='';}
+
+// Atualiza botão ✕ e salva referência no localStorage
+function onRefInput() {
+  const v = document.getElementById('fref').value;
+  document.getElementById('fref-clear').style.display = v ? 'flex' : 'none';
+  if (v) localStorage.setItem('mhf_ref_estilo', v);
+  else   localStorage.removeItem('mhf_ref_estilo');
+}
+
+// Limpa o campo de referência
+function clearRef() {
+  document.getElementById('fref').value = '';
+  document.getElementById('fref-clear').style.display = 'none';
+  localStorage.removeItem('mhf_ref_estilo');
+}
+
+function novaGeracao() {
+  // Fecha modal de edição se estiver aberto
+  if (document.getElementById('em-modal')) closeEditModal();
+  // Limpa localStorage
+  localStorage.removeItem('mhf_last_gen');
+  // Reseta o preview
+  document.getElementById('out').style.display = 'none';
+  document.getElementById('out').innerHTML = '';
+  document.getElementById('em').style.display = 'flex';
+  // Reseta o formulário
+  document.getElementById('fid').value = '';
+  document.getElementById('fth').selectedIndex = 0;
+  selT('carousel', document.querySelector('.tB[data-t="carousel"]'));
+  numSlides = 6;
+  document.getElementById('scn').textContent = 6;
+  clearM();
+}
+
+// Restaurar estado ao abrir
+(function(){
+  // Chave da API
+  const k=localStorage.getItem('mhf_api_key');
+  if(k){document.getElementById('apikey').value=k;document.getElementById('apist').textContent='✓ Chave salva no navegador';}
+
+  // Referência de estilo
+  const ref=localStorage.getItem('mhf_ref_estilo');
+  if(ref){
+    document.getElementById('fref').value=ref;
+    document.getElementById('fref-clear').style.display='flex';
+  }
+
+  // Última geração
+  try {
+    const saved=localStorage.getItem('mhf_last_gen');
+    if(!saved) return;
+    const {type,th,idea,data}=JSON.parse(saved);
+    // Restaurar tipo
+    curType=type;
+    document.querySelectorAll('.tB').forEach(b=>b.classList.toggle('on',b.dataset.t===type));
+    document.getElementById('fs').style.display=USE_SC.includes(type)?'flex':'none';
+    // Restaurar tema e ideia
+    if(th) document.getElementById('fth').value=th;
+    if(idea) document.getElementById('fid').value=idea;
+    // Restaurar preview (sem auto-gerar visual)
+    render(type,data,th,false);
+  } catch(_){}
+})();
+
+// ============================================================
+// EDITOR DE LAYOUT — Posicionamento livre de textos por slide
+// ============================================================
+let _em      = null; // ID do slide em edição
+let _sel     = null; // elemento selecionado
+let _hist    = [];   // pilha de ações do editor
+let _histIdx = -1;   // posição atual na pilha
+const _HIST_MAX = 50;
+
+// Toolbar flutuante — criada uma única vez no DOM
+const _tb = (()=>{
+  const t = document.createElement('div');
+  t.id = 'etb';
+  t.innerHTML =
+    `<div id="etb-hdr">⠿ &nbsp;EDITOR DE SLIDE</div>` +
+
+    `<div class="etb-sec">` +
+      `<div class="etb-lbl">Mover texto</div>` +
+      `<button id="etb-grip" title="Segure e arraste para reposicionar o texto">⠿ &nbsp;Arrastar</button>` +
+    `</div>` +
+
+    `<div class="etb-sec">` +
+      `<div class="etb-lbl">Tamanho da fonte</div>` +
+      `<div class="etb-row">` +
+        `<button onclick="emFz(-1)" title="Diminuir fonte">A−</button>` +
+        `<button onclick="emFz(1)"  title="Aumentar fonte">A+</button>` +
+      `</div>` +
+    `</div>` +
+
+    `<div class="etb-sec">` +
+      `<div class="etb-lbl">Família de fonte</div>` +
+      `<select id="etb-font" onchange="emFont(this.value)">` +
+        `<optgroup label="── MHF Padrão">` +
+          `<option value="">Barlow</option>` +
+          `<option value="'Barlow Condensed',sans-serif">Barlow Condensed</option>` +
+        `</optgroup>` +
+        `<optgroup label="── Serif">` +
+          `<option value="'EB Garamond',serif">Garamond</option>` +
+          `<option value="Georgia,serif">Georgia</option>` +
+          `<option value="'Playfair Display',serif">Playfair Display</option>` +
+          `<option value="'Times New Roman',serif">Times New Roman</option>` +
+        `</optgroup>` +
+        `<optgroup label="── Sans-Serif">` +
+          `<option value="Arial,sans-serif">Arial</option>` +
+          `<option value="'Helvetica Neue',Helvetica,sans-serif">Helvetica</option>` +
+          `<option value="'Inter',sans-serif">Inter</option>` +
+          `<option value="'Lato',sans-serif">Lato</option>` +
+          `<option value="'Open Sans',sans-serif">Open Sans</option>` +
+          `<option value="'Oswald',sans-serif">Oswald</option>` +
+          `<option value="'Roboto',sans-serif">Roboto</option>` +
+        `</optgroup>` +
+        `<optgroup label="── Monoespaçada">` +
+          `<option value="Consolas,monospace">Consolas</option>` +
+          `<option value="'Courier New',monospace">Courier New</option>` +
+          `<option value="'JetBrains Mono',monospace">JetBrains Mono</option>` +
+        `</optgroup>` +
+        `<optgroup label="── Display">` +
+          `<option value="Impact,sans-serif">Impact</option>` +
+          `<option value="'Comic Sans MS',cursive">Comic Sans</option>` +
+        `</optgroup>` +
+      `</select>` +
+    `</div>` +
+
+    `<div class="etb-sec">` +
+      `<div class="etb-lbl">Cor do texto</div>` +
+      `<div class="etb-row">` +
+        `<input type="color" id="etb-color" value="#f5edcc" oninput="emColor(this.value)" title="Abre seletor de cor">` +
+        `<input type="text"  id="etb-color-hex" class="etb-hex" value="#F5EDCC" maxlength="7" placeholder="#F5EDCC" onchange="emColorHex(this.value)" title="Digite o código HEX">` +
+      `</div>` +
+    `</div>` +
+
+    `<div class="etb-sec">` +
+      `<div class="etb-lbl">Alinhamento</div>` +
+      `<div class="etb-row">` +
+        `<button onclick="emAlign('left')"   title="Esquerda">⬅ Esq</button>` +
+        `<button onclick="emAlign('center')" title="Centro">↔ Centro</button>` +
+        `<button onclick="emAlign('right')"  title="Direita">Dir ➡</button>` +
+      `</div>` +
+    `</div>` +
+
+    `<div class="etb-sec">` +
+      `<div class="etb-lbl">Histórico</div>` +
+      `<div class="etb-row">` +
+        `<button id="etb-undo" onclick="emUndo()" style="opacity:.3" title="Desfazer (Ctrl+Z)">↩ Desfazer</button>` +
+        `<button id="etb-redo" onclick="emRedo()" style="opacity:.3" title="Refazer (Ctrl+Y)">↪ Refazer</button>` +
+      `</div>` +
+    `</div>` +
+
+    `<div class="etb-sec">` +
+      `<button onclick="emReset()" title="Restaurar posição, fonte, cor e alinhamento originais" style="background:rgba(196,169,107,.06);">↺ &nbsp;Restaurar tudo</button>` +
+      `<button onclick="emDesel()" title="Fechar painel">✕ &nbsp;Fechar painel</button>` +
+    `</div>`;
+
+  document.body.appendChild(t);
+
+  // Drag do painel editor (move o próprio painel via header)
+  const hdr = t.querySelector('#etb-hdr');
+  hdr.addEventListener('mousedown', e => {
+    e.preventDefault();
+    hdr.style.cursor = 'grabbing';
+    const rect = t.getBoundingClientRect();
+    const ox = e.clientX - rect.left;
+    const oy = e.clientY - rect.top;
+    function mvPanel(e) {
+      t.style.right     = 'auto';
+      t.style.transform = 'none';
+      t.style.left = Math.max(0, Math.min(e.clientX - ox, window.innerWidth  - t.offsetWidth))  + 'px';
+      t.style.top  = Math.max(0, Math.min(e.clientY - oy, window.innerHeight - t.offsetHeight)) + 'px';
+    }
+    function upPanel() {
+      hdr.style.cursor = 'grab';
+      window.removeEventListener('mousemove', mvPanel);
+      window.removeEventListener('mouseup',   upPanel);
+    }
+    window.addEventListener('mousemove', mvPanel);
+    window.addEventListener('mouseup',   upPanel);
+  });
+
+  // Drag do texto selecionado via botão ⠿ Arrastar
+  const grip = t.querySelector('#etb-grip');
+  grip.addEventListener('mousedown', e => {
+    if (!_sel) return;
+    e.preventDefault();
+    grip.style.cursor = 'grabbing';
+
+    const dragEl  = _sel;
+    const startTr = dragEl.style.transform; // estado antes do drag
+    const startX  = e.clientX;
+    const startY  = e.clientY;
+    const cur     = _getTr(dragEl);
+
+    function move(e) {
+      if (!_sel) return;
+      const sc = _getScale();
+      const dx = (e.clientX - startX) / sc + cur.x;
+      const dy = (e.clientY - startY) / sc + cur.y;
+      _sel.style.transform = `translate(${dx}px,${dy}px)`;
+      _posTB();
+    }
+    function up() {
+      grip.style.cursor = 'grab';
+      const endTr = dragEl.style.transform;
+      if (endTr !== startTr) _histPush(dragEl, 'transform', startTr, endTr);
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup',   up);
+    }
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup',   up);
+  });
+
+  // Clique fora → desselecionar
+  document.addEventListener('mousedown', e => {
+    if (_sel && !t.contains(e.target) && e.target !== _sel && !_sel.contains(e.target)) {
+      emDesel();
+    }
+  }, true);
+
+  return t;
+})();
+
+// Lê translate atual do elemento
+function _getTr(el) {
+  const m = (el.style.transform || '').match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
+  return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 0, y: 0 };
+}
+
+// ── HISTÓRICO DE AÇÕES (Undo / Redo) ─────────────────────────
+
+// Registra uma ação na pilha
+function _histPush(el, prop, prev, next) {
+  if (prev === next) return;
+  // Descarta ações futuras ao fazer nova ação (trunca redo)
+  _hist = _hist.slice(0, _histIdx + 1);
+  _hist.push({ el, prop, prev, next });
+  if (_hist.length > _HIST_MAX) _hist.shift(); else _histIdx++;
+  _histUpdate();
+}
+
+// Atualiza visual dos botões ↩ ↪
+function _histUpdate() {
+  const u = document.getElementById('etb-undo');
+  const r = document.getElementById('etb-redo');
+  if (u) u.style.opacity = _histIdx >= 0             ? '1' : '.3';
+  if (r) r.style.opacity = _histIdx < _hist.length-1 ? '1' : '.3';
+}
+
+// Aplica valor a um elemento (estilo ou HTML)
+function _histApply(action, val) {
+  action.el.style[action.prop] = val;
+  if (_sel === action.el) _posTB();
+}
+
+// Desfaz última ação
+function emUndo() {
+  if (_histIdx < 0) return;
+  _histApply(_hist[_histIdx], _hist[_histIdx].prev);
+  _histIdx--;
+  _histUpdate();
+}
+
+// Refaz última ação desfeita
+function emRedo() {
+  if (_histIdx >= _hist.length - 1) return;
+  _histIdx++;
+  _histApply(_hist[_histIdx], _hist[_histIdx].next);
+  _histUpdate();
+}
+
+// Exibe o painel editor (posição é fixa no lado direito ou onde o usuário arrastou)
+function _posTB() {
+  if (!_sel) return;
+  _tb.style.display = 'flex';
+}
+
+// Converte rgb() para hex
+function _rgbToHex(rgb) {
+  const m = (rgb || '').match(/\d+/g);
+  if (!m || m.length < 3) return '#f5edcc';
+  return '#' + m.slice(0,3).map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
+}
+
+// Mapeia fontFamily para o valor do <select>
+function _matchFont(ff) {
+  if (!ff) return '';
+  const map = [
+    ['Condensed',       "'Barlow Condensed',sans-serif"],
+    ['EB Garamond',     "'EB Garamond',serif"],
+    ['Garamond',        "'EB Garamond',serif"],
+    ['Georgia',         'Georgia,serif'],
+    ['Playfair',        "'Playfair Display',serif"],
+    ['Times',           "'Times New Roman',serif"],
+    ['Helvetica',       "'Helvetica Neue',Helvetica,sans-serif"],
+    ['Arial',           'Arial,sans-serif'],
+    ['Inter',           "'Inter',sans-serif"],
+    ['Lato',            "'Lato',sans-serif"],
+    ['Open Sans',       "'Open Sans',sans-serif"],
+    ['Oswald',          "'Oswald',sans-serif"],
+    ['Roboto',          "'Roboto',sans-serif"],
+    ['Consolas',        'Consolas,monospace'],
+    ['Courier',         "'Courier New',monospace"],
+    ['JetBrains',       "'JetBrains Mono',monospace"],
+    ['Impact',          'Impact,sans-serif'],
+    ['Comic',           "'Comic Sans MS',cursive"],
+  ];
+  for (const [key, val] of map) {
+    if (ff.includes(key)) return val;
+  }
+  return '';
+}
+
+// Seleciona elemento dentro do slide em edição
+function emSel(el) {
+  if (_sel) _sel.classList.remove('em-sel');
+  _sel = el;
+  el.classList.add('em-sel');
+  // Sincronizar controles da toolbar com os valores atuais do elemento
+  const hex = _rgbToHex(getComputedStyle(el).color);
+  const cp = document.getElementById('etb-color');
+  if (cp) cp.value = hex;
+  const hi = document.getElementById('etb-color-hex');
+  if (hi) hi.value = hex.toUpperCase();
+  const fs = document.getElementById('etb-font');
+  if (fs) fs.value = _matchFont(el.style.fontFamily);
+  _posTB();
+}
+
+// Desseleciona
+function emDesel() {
+  if (_sel) _sel.classList.remove('em-sel');
+  _sel = null;
+  _tb.style.display = 'none';
+}
+
+// Ajuste de fonte
+function emFz(d) {
+  if (!_sel) return;
+  const prev = _sel.style.fontSize;
+  const fz   = parseFloat(getComputedStyle(_sel).fontSize) || 12;
+  const next = Math.max(6, Math.min(60, fz + d)) + 'px';
+  _sel.style.fontSize = next;
+  _histPush(_sel, 'fontSize', prev, next);
+  _posTB();
+}
+
+// Alinhamento de texto
+function emAlign(a) {
+  if (!_sel) return;
+  const prev = _sel.style.textAlign;
+  _sel.style.textAlign = a;
+  _histPush(_sel, 'textAlign', prev, a);
+}
+
+// Valida e aplica HEX digitado no campo de texto (cor do texto)
+function emColorHex(val) {
+  const v = val.startsWith('#') ? val : '#' + val;
+  if (!/^#[0-9a-fA-F]{6}$/.test(v)) return;
+  const cp = document.getElementById('etb-color');
+  if (cp) cp.value = v;
+  emColor(v);
+}
+
+// Valida e aplica HEX digitado no campo de texto (cor do fundo)
+function emBgHex(val) {
+  const v = val.startsWith('#') ? val : '#' + val;
+  if (!/^#[0-9a-fA-F]{6}$/.test(v)) return;
+  const cp = document.getElementById('em-bg-color');
+  if (cp) cp.value = v;
+  emBgColor(v);
+}
+
+// Cor do texto selecionado
+function emColor(val) {
+  if (!_sel) return;
+  const prev = _sel.style.color;
+  _sel.style.color = val;
+  _histPush(_sel, 'color', prev, val);
+  // Sincronizar campo HEX
+  const hi = document.getElementById('etb-color-hex');
+  if (hi) hi.value = val.toUpperCase();
+}
+
+// Fonte do texto selecionado
+function emFont(val) {
+  if (!_sel) return;
+  const prev = _sel.style.fontFamily;
+  _sel.style.fontFamily = val;
+  _histPush(_sel, 'fontFamily', prev, val);
+}
+
+// Cor do fundo do slide (altera o .bgl com gradiente baseado na cor escolhida)
+function emBgColor(val) {
+  const modal = document.getElementById('em-modal');
+  if (!modal) return;
+  const slide = document.getElementById(modal._slideId);
+  if (!slide) return;
+  const bgl = slide.querySelector('.bgl');
+  if (!bgl) return;
+  const prev = bgl.style.background;
+  // Gera gradiente escuro→cor escolhida para manter profundidade
+  const r = parseInt(val.slice(1,3),16), g = parseInt(val.slice(3,5),16), b = parseInt(val.slice(5,7),16);
+  const dark = `rgb(${Math.round(r*.35)},${Math.round(g*.35)},${Math.round(b*.35)})`;
+  const next = `linear-gradient(135deg,${dark} 0%,${val} 100%)`;
+  bgl.style.background = next;
+  _histPush(bgl, 'background', prev, next);
+  // Sincronizar campo HEX do fundo
+  const hi = document.getElementById('em-bg-hex');
+  if (hi) hi.value = val.toUpperCase();
+}
+
+// Restaura o fundo original do slide
+function emBgReset() {
+  const modal = document.getElementById('em-modal');
+  if (!modal) return;
+  const slide = document.getElementById(modal._slideId);
+  if (!slide) return;
+  const bgl = slide.querySelector('.bgl');
+  if (!bgl) return;
+  const prev = bgl.style.background;
+  if (prev) { bgl.style.background = ''; _histPush(bgl, 'background', prev, ''); }
+}
+
+// Reset: restaura todas as propriedades do editor (cada uma vira um item de histórico)
+function emReset() {
+  if (!_sel) return;
+  ['transform','fontSize','textAlign','color','fontFamily'].forEach(p => {
+    const prev = _sel.style[p];
+    if (prev) { _sel.style[p] = ''; _histPush(_sel, p, prev, ''); }
+  });
+  _posTB();
+}
+
+// Retorna o fator de escala atual do modal (1 se não houver modal aberto)
+function _getScale() {
+  const sc = document.getElementById('em-scaler');
+  if (!sc) return 1;
+  const m = (sc.style.transform || '').match(/scale\(([^)]+)\)/);
+  return m ? parseFloat(m[1]) : 1;
+}
+
+// Abre o modal de edição com o slide ampliado
+function openEditModal(slideId) {
+  const slide = document.getElementById(slideId);
+  if (!slide) return;
+
+  const origParent = slide.parentNode;
+  const origNext   = slide.nextSibling;
+  const isStory    = slide.classList.contains('story');
+  const slideW     = 245;
+  const slideH     = isStory ? 436 : 245;
+
+  // Limpar histórico ao abrir novo modal
+  _hist = []; _histIdx = -1; _histUpdate();
+
+  // Liberar todo o clipping interno para edição sem restrições
+  // (o export via html2canvas usa o slide fora do modal, sem essas alterações)
+  slide.style.overflow = 'visible';
+  slide.querySelectorAll('.sb, .sb > div').forEach(el => {
+    el._emOvSave = el.style.overflow;
+    el.style.overflow = 'visible';
+  });
+  slide.querySelectorAll('[data-f]').forEach(el => {
+    el._emClSave  = el.style.webkitLineClamp;
+    el._emDiSave  = el.style.display;
+    el._emOvfSave = el.style.overflow;
+    el.style.webkitLineClamp = 'unset';
+    el.style.display         = 'block';
+    el.style.overflow        = 'visible';
+  });
+
+  // Zoom que maximiza o slide sem ultrapassar a tela
+  const maxW = Math.min(window.innerWidth  * 0.88, 740);
+  const maxH = window.innerHeight * 0.72;
+  const zoom = Math.round(Math.min(3, Math.min(maxW / slideW, maxH / slideH)) * 10) / 10;
+
+  // Overlay
+  const modal = document.createElement('div');
+  modal.id = 'em-modal';
+
+  // Wrapper com as dimensões visuais do slide ampliado
+  const wrap = document.createElement('div');
+  wrap.id = 'em-scaler-wrap';
+  wrap.style.width  = (slideW * zoom) + 'px';
+  wrap.style.height = (slideH * zoom) + 'px';
+
+  // Scaler: contém o slide real ampliado via transform (DOM não muda)
+  const scaler = document.createElement('div');
+  scaler.id = 'em-scaler';
+  scaler.style.width          = slideW + 'px';
+  scaler.style.height         = slideH + 'px';
+  scaler.style.transform      = `scale(${zoom})`;
+  scaler.appendChild(slide);
+  wrap.appendChild(scaler);
+
+  // Barra inferior
+  const bar = document.createElement('div');
+  bar.id = 'em-modal-bar';
+  bar.innerHTML =
+    `<span class="em-hint">Clique para selecionar · ⠿ arrastar</span>` +
+    `<div class="em-bg-ctrl">` +
+      `<label>Fundo</label>` +
+      `<input type="color" id="em-bg-color" value="#0d1a32" oninput="emBgColor(this.value)" title="Abre seletor de cor">` +
+      `<input type="text"  id="em-bg-hex" value="#0D1A32" maxlength="7" placeholder="#0D1A32" style="width:80px;height:26px;background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:3px;color:var(--cream);font-family:monospace;font-size:11px;padding:0 6px;outline:none;text-transform:uppercase;" onchange="emBgHex(this.value)" title="Digite o código HEX">` +
+      `<button onclick="emBgReset()">↺ Reset</button>` +
+    `</div>` +
+    `<button onclick="closeEditModal()">✓ Fechar edição</button>`;
+
+  modal.appendChild(wrap);
+  modal.appendChild(bar);
+  document.body.appendChild(modal);
+
+  // Ativar modo de edição
+  slide.classList.add('edit-active');
+  _em = slideId;
+  document.querySelector(`[data-em="${slideId}"]`)?.classList.add('be-on');
+
+  // Vincular listeners de seleção (idempotente)
+  slide.querySelectorAll('[data-f], .cp').forEach(el => {
+    if (el._emBound) return;
+    el._emBound = true;
+    el.addEventListener('click', e => {
+      if (!el.closest('.igs')?.classList.contains('edit-active')) return;
+      e.stopPropagation();
+      emSel(el);
+    });
+  });
+
+  // Guardar referências para restauração ao fechar
+  modal._origParent = origParent;
+  modal._origNext   = origNext;
+  modal._slideId    = slideId;
+
+  // Fechar ao clicar no overlay escuro
+  modal.addEventListener('mousedown', e => { if (e.target === modal) closeEditModal(); });
+
+  // Sincronizar color picker do fundo com a cor atual do slide
+  const bglEl = slide.querySelector('.bgl');
+  if (bglEl) {
+    const bgStr = bglEl.style.background || '';
+    const hexMatch = bgStr.match(/#[0-9a-fA-F]{6}/);
+    setTimeout(() => {
+      const bgPicker = document.getElementById('em-bg-color');
+      if (bgPicker && hexMatch) bgPicker.value = hexMatch[0];
+    }, 80);
+  }
+
+  // Reposicionar toolbar se já havia elemento selecionado
+  if (_sel) setTimeout(_posTB, 60);
+}
+
+// Fecha o modal e devolve o slide ao grid original
+function closeEditModal() {
+  const modal = document.getElementById('em-modal');
+  if (!modal) return;
+
+  const slide = document.getElementById(modal._slideId);
+  if (slide) {
+    // Restaurar posição no DOM
+    const next = modal._origNext;
+    if (next && next.parentNode === modal._origParent) {
+      modal._origParent.insertBefore(slide, next);
+    } else {
+      modal._origParent.appendChild(slide);
+    }
+    // Restaurar todos os overflows e line-clamps
+    slide.style.overflow = '';
+    slide.querySelectorAll('.sb, .sb > div').forEach(el => {
+      el.style.overflow = el._emOvSave || '';
+    });
+    slide.querySelectorAll('[data-f]').forEach(el => {
+      el.style.webkitLineClamp = el._emClSave  || '';
+      el.style.display         = el._emDiSave  || '';
+      el.style.overflow        = el._emOvfSave || '';
+    });
+    slide.classList.remove('edit-active');
+  }
+
+  _em = null;
+  emDesel();
+  document.querySelector(`[data-em="${modal._slideId}"]`)?.classList.remove('be-on');
+  modal.remove();
+  // Limpar histórico ao fechar
+  _hist = []; _histIdx = -1;
+}
+
+// Atalhos de teclado (Escape / Ctrl+Z / Ctrl+Y)
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('em-modal')) { closeEditModal(); return; }
+
+  // Undo/Redo apenas com o modal aberto e foco fora de campos de texto
+  if (!document.getElementById('em-modal')) return;
+  if (document.activeElement?.isContentEditable) return; // deixa o browser tratar undo de texto
+
+  if ((e.ctrlKey||e.metaKey) && !e.shiftKey && e.key==='z') { e.preventDefault(); emUndo(); }
+  if ((e.ctrlKey||e.metaKey) && (e.key==='y' || (e.shiftKey && e.key==='z'))) { e.preventDefault(); emRedo(); }
+});
+
+// Abre/fecha modal ao clicar em ✎
+function toggleEM(slideId) {
+  const modal = document.getElementById('em-modal');
+  if (modal && modal._slideId === slideId) {
+    closeEditModal();
+  } else {
+    if (modal) closeEditModal(); // fecha outro slide aberto
+    openEditModal(slideId);
+  }
+}
+
+// ============================================================
+// HISTÓRICO DE POSTS
+// ============================================================
+const HIST_KEY = 'mhf_historico';
+const HIST_MAX = 30;
+
+const HIST_COR = {
+  carousel:'var(--gold)', static:'#5b9cf6', reels:'#a78bfa',
+  stories:'#fb923c', antesdepois:'#f87171', checklist:'#4ade80', countdown:'#2dd4bf'
+};
+
+// Remove tags HTML de uma string
+function _stripTags(s) {
+  return (s||'').replace(/<[^>]+>/g,'').replace(/&[^;]+;/g,'').trim();
+}
+
+// Escapa caracteres HTML para exibição segura em innerHTML
+function _esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Salva uma entrada no histórico logo após render() — chamado por gen()
+function salvarHistorico(type, data, th) {
+  try {
+    const ideia = document.getElementById('fid')?.value?.trim() || '';
+
+    // Extrai o gancho conforme o tipo de conteúdo
+    let gancho = '';
+    if      (data.slides?.[0]?.headline)  gancho = data.slides[0].headline;
+    else if (data.headline)               gancho = data.headline;
+    else if (data.stories?.[0]?.headline) gancho = data.stories[0].headline;
+    else if (data.scenes?.[0]?.narration) gancho = data.scenes[0].narration;
+    else if (data.items?.[0]?.text)       gancho = data.items[0].text;
+
+    const now = new Date();
+    const dataStr = now.toLocaleDateString('pt-BR') + ' às ' +
+      now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+    const totalSlides =
+      data.slides?.length  ||
+      data.stories?.length ||
+      data.scenes?.length  || 1;
+
+    const entry = {
+      id:          String(Date.now()),
+      data:        dataStr,
+      tipo:        type,
+      tema:        th,
+      gancho:      _stripTags(gancho).slice(0, 100),
+      ideia:       ideia.slice(0, 80),
+      totalSlides
+    };
+
+    const hist = JSON.parse(localStorage.getItem(HIST_KEY) || '[]');
+    hist.unshift(entry);
+    if (hist.length > HIST_MAX) hist.splice(HIST_MAX);
+    localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+  } catch(e) {
+    console.warn('Erro ao salvar histórico:', e);
+  }
+}
+
+// Gera o HTML de um card do histórico
+function _histCard(item) {
+  const cor   = HIST_COR[item.tipo] || 'var(--gold)';
+  const label = TL[item.tipo] || item.tipo;
+  const slides = item.totalSlides > 1 ? `${item.totalSlides} slides` : '';
+  return `<div class="hist-card">
+    <div class="hist-badges">
+      <span class="hist-badge" style="color:${cor};border-color:${cor};">${label}</span>
+      <span class="hist-badge tema">${_esc(item.tema)}</span>
+    </div>
+    <div class="hist-gancho">${_esc(item.gancho) || '—'}</div>
+    ${item.ideia ? `<div class="hist-ideia">${_esc(item.ideia)}</div>` : ''}
+    <div class="hist-meta">
+      <span>${_esc(item.data)}</span>
+      ${slides ? `<span>${slides}</span>` : ''}
+    </div>
+    <button class="hist-reusar" onclick="reusarPost('${item.id}')">↩ Reusar este post</button>
+  </div>`;
+}
+
+// Renderiza a lista de cards (com filtro opcional)
+function renderHistorico(filtro) {
+  const list = document.getElementById('hist-list');
+  if (!list) return;
+  const hist = JSON.parse(localStorage.getItem(HIST_KEY) || '[]');
+  const q    = (filtro || '').toLowerCase().trim();
+  const filtrado = q ? hist.filter(h =>
+    (h.gancho||'').toLowerCase().includes(q) ||
+    (h.ideia ||'').toLowerCase().includes(q) ||
+    (h.tipo  ||'').toLowerCase().includes(q) ||
+    (h.tema  ||'').toLowerCase().includes(q)
+  ) : hist;
+
+  if (!filtrado.length) {
+    list.innerHTML = `<div class="hist-empty">${
+      q ? 'Nenhum resultado para "' + _esc(q) + '".' : 'Nenhum post gerado ainda.'
+    }</div>`;
+    return;
+  }
+  list.innerHTML = filtrado.map(_histCard).join('');
+}
+
+// Abre o drawer e renderiza a lista
+function abrirHistorico() {
+  document.getElementById('hist-q').value = '';
+  renderHistorico('');
+  document.getElementById('hist-overlay').classList.add('open');
+  document.getElementById('hist-drawer').classList.add('open');
+}
+
+// Fecha o drawer
+function fecharHistorico() {
+  document.getElementById('hist-overlay')?.classList.remove('open');
+  document.getElementById('hist-drawer')?.classList.remove('open');
+}
+
+// Preenche o formulário com os dados do item e fecha o drawer
+function reusarPost(id) {
+  const hist = JSON.parse(localStorage.getItem(HIST_KEY) || '[]');
+  const item = hist.find(h => h.id === id);
+  if (!item) return;
+
+  document.getElementById('fid').value = item.ideia || '';
+  const thEl = document.getElementById('fth');
+  if (thEl) thEl.value = item.tema || 'educativo';
+
+  const btn = document.querySelector(`.tB[data-t="${item.tipo}"]`);
+  if (btn) selT(item.tipo, btn);
+
+  fecharHistorico();
+}
+
+// Limpa todo o histórico após confirmação
+function limparHistorico() {
+  if (!confirm('Limpar todo o histórico? Esta ação não pode ser desfeita.')) return;
+  localStorage.removeItem(HIST_KEY);
+  renderHistorico('');
+}
+
+// Criar overlay e drawer no DOM (uma única vez ao carregar a página)
+(function() {
+  const overlay = document.createElement('div');
+  overlay.id = 'hist-overlay';
+  overlay.addEventListener('click', fecharHistorico);
+  document.body.appendChild(overlay);
+
+  const drawer = document.createElement('div');
+  drawer.id = 'hist-drawer';
+  drawer.innerHTML =
+    `<div class="hist-hdr">` +
+      `<span class="hist-title">📋 Histórico de Posts</span>` +
+      `<button onclick="fecharHistorico()" title="Fechar">✕</button>` +
+    `</div>` +
+    `<div class="hist-search-wrap">` +
+      `<input type="text" id="hist-q" placeholder="Buscar gancho, ideia, tipo…" oninput="renderHistorico(this.value)">` +
+    `</div>` +
+    `<div class="hist-list" id="hist-list"></div>` +
+    `<div class="hist-foot">` +
+      `<button onclick="limparHistorico()">🗑 &nbsp;Limpar histórico</button>` +
+    `</div>`;
+  document.body.appendChild(drawer);
+
+  // Fechar drawer com Escape (sem interferir no modal de edição)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('hist-drawer')?.classList.contains('open')) {
+      fecharHistorico();
+    }
+  });
+})();
+</script>
+</body>
+</html>
