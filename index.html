@@ -6,6 +6,7 @@
 <title>MHF Partners — Gerador de Conteúdo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Barlow+Condensed:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;600;700&family=Oswald:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 /* ====================================================
    VARIÁVEIS — edite aqui para ajustar cores globais
@@ -345,6 +346,79 @@ header{background:var(--bp);border-bottom:1px solid var(--bdr);padding:14px 34px
 .hist-foot{padding:12px 16px;border-top:1px solid var(--bdr);flex-shrink:0;}
 .hist-foot button{width:100%;padding:9px 0;background:transparent;border:1px solid rgba(220,50,50,.25);border-radius:var(--r);color:rgba(220,100,100,.7);font-family:'Barlow',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .17s;}
 .hist-foot button:hover{border-color:rgba(220,50,50,.5);color:#ff8080;background:rgba(220,50,50,.06);}
+
+/* ── INTELIGÊNCIA DE COPY ─────────────────────────────────── */
+#intel-btn{padding:6px 12px;background:transparent;border:1px solid var(--bdr);border-radius:4px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+#intel-btn:hover{border-color:rgba(196,169,107,.5);color:var(--gold);}
+
+#intel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:9990;opacity:0;pointer-events:none;transition:opacity .3s;}
+#intel-overlay.open{opacity:1;pointer-events:auto;}
+
+#intel-drawer{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--bp);border-left:1px solid var(--bdr);z-index:9991;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);box-shadow:-6px 0 28px rgba(0,0,0,.5);}
+#intel-drawer.open{transform:translateX(0);}
+
+.intel-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.intel-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--cream);}
+.intel-hdr button{width:28px;height:28px;background:transparent;border:1px solid var(--bdr);border-radius:50%;color:var(--mu);font-size:13px;cursor:pointer;transition:all .17s;display:flex;align-items:center;justify-content:center;}
+.intel-hdr button:hover{border-color:rgba(196,169,107,.5);color:var(--gold);}
+
+.intel-tabs{display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.intel-tab{flex:1;padding:10px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--mu);font-family:'Barlow',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .17s;}
+.intel-tab:hover{color:var(--cream);}
+.intel-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+.intel-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.intel-section{display:none;flex:1;flex-direction:column;padding:14px 16px;gap:10px;}
+.intel-section.active{display:flex;}
+
+.intel-desc{font-size:10px;color:var(--mu);line-height:1.5;padding:8px 10px;background:rgba(196,169,107,.04);border:1px solid var(--bdr);border-radius:var(--r);flex-shrink:0;}
+
+.intel-list{display:flex;flex-direction:column;gap:6px;flex:1;}
+.intel-empty{font-size:11px;color:var(--mu);text-align:center;padding:20px;opacity:.6;}
+
+.intel-card{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:border-color .17s;}
+.intel-card:hover{border-color:rgba(196,169,107,.28);}
+.intel-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.intel-card-txt{font-size:11px;color:var(--cream);line-height:1.5;flex:1;}
+.intel-card-del{width:20px;height:20px;background:transparent;border:1px solid var(--bdr);border-radius:50%;color:var(--mu);font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .17s;}
+.intel-card-del:hover{border-color:rgba(220,50,50,.5);color:#ff8080;}
+.intel-card-meta{display:flex;gap:5px;flex-wrap:wrap;}
+.intel-badge{font-size:7.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 7px;border-radius:20px;border:1px solid currentColor;color:var(--gold);}
+.intel-badge.tema{color:var(--mu);border-color:var(--bdr);}
+.intel-card-nota{font-size:9.5px;color:var(--mu);font-style:italic;}
+.intel-card-date{font-size:8px;color:var(--mu);}
+
+.intel-add{border-top:1px solid var(--bdr);padding-top:10px;display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
+.intel-add label{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+.intel-add textarea{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:9px 11px;color:var(--cream);font-family:'Barlow',sans-serif;font-size:12px;outline:none;transition:border-color .17s;width:100%;min-height:70px;resize:vertical;line-height:1.5;}
+.intel-add textarea:focus{border-color:rgba(196,169,107,.52);}
+.intel-add textarea::placeholder{color:var(--mu);}
+.intel-add select{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:9px 11px;color:var(--cream);font-family:'Barlow',sans-serif;font-size:12px;outline:none;width:100%;}
+.intel-add select option{background:var(--bc);}
+.intel-add-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.intel-btn-add{padding:9px;background:var(--navy);border:1px solid var(--gold);border-radius:var(--r);color:var(--cream);font-family:'Barlow',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;width:100%;}
+.intel-btn-add:hover{background:var(--gold);color:var(--navy);}
+
+.bap{padding:4px 8px;background:transparent;border:1px solid rgba(74,222,128,.25);border-radius:3px;color:rgba(74,222,128,.7);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .17s;}
+.bap:hover{border-color:rgba(74,222,128,.6);color:#4ade80;}
+
+#aprov-modal{position:fixed;inset:0;background:rgba(2,4,9,.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;}
+#aprov-box{background:var(--bp);border:1px solid var(--bdr);border-radius:10px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 16px 56px rgba(0,0,0,.8);}
+.aprov-hdr{background:rgba(196,169,107,.07);border-bottom:1px solid var(--bdr);padding:14px 18px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--cream);}
+.aprov-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;}
+.aprov-label{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:4px;}
+.aprov-body textarea{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:10px 12px;color:var(--cream);font-family:'Barlow',sans-serif;font-size:12px;outline:none;width:100%;min-height:80px;resize:vertical;line-height:1.5;transition:border-color .17s;}
+.aprov-body textarea:focus{border-color:rgba(196,169,107,.52);}
+.aprov-body select,.aprov-body input[type=text]{background:var(--bc);border:1px solid var(--bdr);border-radius:var(--r);padding:9px 12px;color:var(--cream);font-family:'Barlow',sans-serif;font-size:12px;outline:none;width:100%;transition:border-color .17s;}
+.aprov-body select:focus,.aprov-body input[type=text]:focus{border-color:rgba(196,169,107,.52);}
+.aprov-body select option{background:var(--bc);}
+.aprov-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.aprov-foot{padding:12px 18px;border-top:1px solid var(--bdr);display:flex;gap:8px;justify-content:flex-end;}
+.aprov-foot button{padding:8px 18px;border-radius:var(--r);font-family:'Barlow',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.aprov-cancel{background:transparent;border:1px solid var(--bdr);color:var(--mu);}
+.aprov-cancel:hover{border-color:rgba(196,169,107,.4);color:var(--cream);}
+.aprov-confirm{background:var(--navy);border:1px solid var(--gold);color:var(--cream);}
+.aprov-confirm:hover{background:var(--gold);color:var(--navy);}
 </style>
 </head>
 <body>
@@ -354,6 +428,7 @@ header{background:var(--bp);border-bottom:1px solid var(--bdr);padding:14px 34px
   <div class="htag">Gerador de Conteúdo · Instagram</div>
   <div style="display:flex;gap:8px;align-items:center;">
     <button id="hist-btn" onclick="abrirHistorico()">📋 Histórico</button>
+    <button id="intel-btn" onclick="abrirIntel()">✦ Inteligência</button>
     <button onclick="novaGeracao()" style="padding:6px 14px;background:transparent;border:1px solid var(--bdr);border-radius:4px;color:var(--mu);font-family:'Barlow',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='rgba(196,169,107,.5)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--bdr)';this.style.color='var(--mu)'">✕ Novo</button>
   </div>
 </header>
@@ -451,6 +526,33 @@ function saveKey(v) {
   if (k) localStorage.setItem('mhf_api_key', k); else localStorage.removeItem('mhf_api_key');
   const st = document.getElementById('apist');
   if (st) st.textContent = k ? '✓ Chave salva no navegador' : '';
+}
+
+// Monta system prompt com a inteligência acumulada injetada
+function buildSystemPrompt() {
+  try {
+    const intel     = JSON.parse(localStorage.getItem('mhf_inteligencia') || '{}');
+    const exemplos  = intel.exemplos_aprovados || [];
+    const regras    = intel.regras_aprendidas  || [];
+    const proibidos = intel.padroes_proibidos  || [];
+    let extra = '';
+    if (regras.length) {
+      extra += '\n\n=== REGRAS APRENDIDAS — SIGA COM PRIORIDADE MÁXIMA ===\n';
+      extra += regras.map(r => `- ${r.texto}`).join('\n');
+    }
+    if (proibidos.length) {
+      extra += '\n\n=== PADRÕES PROIBIDOS — NUNCA USE ===\n';
+      extra += proibidos.map(p => `- ${p.texto}`).join('\n');
+    }
+    if (exemplos.length) {
+      extra += '\n\n=== EXEMPLOS DE QUALIDADE APROVADOS — USE COMO REFERÊNCIA DE NÍVEL ===\n';
+      exemplos.forEach(e => {
+        extra += `\n[${(e.tipo||'geral').toUpperCase()}${e.tema?' · '+e.tema:''}]\n"${e.texto}"`;
+        if (e.nota) extra += `\nNota: ${e.nota}`;
+      });
+    }
+    return MHF_CTX + extra;
+  } catch { return MHF_CTX; }
 }
 
 // ============================================================
@@ -667,7 +769,7 @@ async function gen() {
   setL(true); clearM(); modeHist = [];
 
   try {
-    const raw  = await api(MHF_CTX, prompt(curType, th, idea, numSlides, ref), 2500);
+    const raw  = await api(buildSystemPrompt(), prompt(curType, th, idea, numSlides, ref), 2500);
     const data = parseJ(raw);
     render(curType, data, th);
     salvarHistorico(curType, data, th);
@@ -942,7 +1044,7 @@ function mkSlides(data) {
   data.slides.forEach((s,i)=>{
     const id=`s${i}`;
     const vs=data.visual_suggestion||'abstrato geométrico tech';
-    h+=`<div class="sw"><div class="sa"><span class="nl">Slide ${s.number}</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_slide_${String(s.number).padStart(2,'0')}')">⬇</button></div></div>`;
+    h+=`<div class="sw"><div class="sa"><span class="nl">Slide ${s.number}</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bap" onclick="abrirAprovacao('${id}','${s.type}')">✓</button><button class="bd" onclick="dl('${id}','mhf_slide_${String(s.number).padStart(2,'0')}')">⬇</button></div></div>`;
     h+=mkSlide(s,tot,id);
     h+='</div>';
   });
@@ -1091,7 +1193,7 @@ function mkStatic(data) {
   const decos=mode.dec(false);
   const ovBg='linear-gradient(135deg,rgba(6,12,28,.78) 0%,rgba(6,12,28,.4) 100%)';
   return `<div class="stl"><div>
-    <div class="sa" style="margin-bottom:6px;"><span class="nl">Post Estático</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_post_estatico')">⬇</button></div></div>
+    <div class="sa" style="margin-bottom:6px;"><span class="nl">Post Estático</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bap" onclick="abrirAprovacao('${id}','gancho')">✓</button><button class="bd" onclick="dl('${id}','mhf_post_estatico')">⬇</button></div></div>
     <div class="igs dark" id="${id}">
       <div class="bgl" style="background:${bg};"></div><div class="svgl"></div>
       <div class="svgo" style="background:${ovBg};"></div>
@@ -1139,7 +1241,7 @@ function mkStories(data) {
     const dnStyle=mode.dn?`position:absolute;bottom:-4px;right:6px;font-family:'Barlow Condensed',sans-serif;font-weight:800;line-height:1;letter-spacing:-3px;pointer-events:none;z-index:2;user-select:none;font-size:125px;color:${isLt?`rgba(27,48,104,${mode.dno||0.04})`:`rgba(245,237,204,${mode.dno||0.04})`};`:'' ;
     const dnEl=mode.dn?`<div style="${dnStyle}">${String(s.number).padStart(2,'0')}</div>`:'';
     const center=isLt||mode.layout==='sb-center';
-    h+=`<div class="sw"><div class="sa"><span class="nl">Story ${s.number}</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','visual abstrato geométrico tech')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_story_${String(s.number).padStart(2,'0')}')">⬇</button></div></div>
+    h+=`<div class="sw"><div class="sa"><span class="nl">Story ${s.number}</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','visual abstrato geométrico tech')">✦ Visual</button><button class="bap" onclick="abrirAprovacao('${id}','${s.type}')">✓</button><button class="bd" onclick="dl('${id}','mhf_story_${String(s.number).padStart(2,'0')}')">⬇</button></div></div>
     <div class="igs story ${isLt?'light':'dark'}" id="${id}">
       <div class="bgl" style="background:${bg};"></div><div class="svgl"></div>
       <div class="svgo" style="background:${ovBg};"></div>
@@ -1170,7 +1272,7 @@ function mkChecklist(data) {
   const ovBg='linear-gradient(135deg,rgba(6,12,28,.78) 0%,rgba(6,12,28,.4) 100%)';
   const items=(data.items||[]).map(it=>`<div class="cli"><span class="ci" style="color:${it.check?'#70c97a':'#e07070'};">${it.check?'✓':'✗'}</span><div class="ct" contenteditable="true">${it.text}</div></div>`).join('');
   return `<div class="stl"><div>
-    <div class="sa" style="margin-bottom:6px;"><span class="nl">Checklist</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bd" onclick="dl('${id}','mhf_checklist')">⬇</button></div></div>
+    <div class="sa" style="margin-bottom:6px;"><span class="nl">Checklist</span><div class="sab"><button class="be" data-em="${id}" onclick="toggleEM('${id}')">✎</button><button class="bv" data-v="${id}" onclick="genVis('${id}','${vs.replace(/'/g,"\\'")}')">✦ Visual</button><button class="bap" onclick="abrirAprovacao('${id}','gancho')">✓</button><button class="bd" onclick="dl('${id}','mhf_checklist')">⬇</button></div></div>
     <div class="igs dark" id="${id}">
       <div class="bgl" style="background:${bg};"></div><div class="svgl"></div>
       <div class="svgo" style="background:${ovBg};"></div>
@@ -2009,6 +2111,387 @@ function limparHistorico() {
       fecharHistorico();
     }
   });
+})();
+
+// ============================================================
+// INTELIGÊNCIA DE COPY
+// ============================================================
+const INTEL_KEY = 'mhf_inteligencia';
+const GOOGLE_CLIENT_ID = '678215493280-h1q0vic9asl5vjjco2a1ckuhvstebp7c.apps.googleusercontent.com';
+const DRIVE_FILE_NAME  = 'mhf_inteligencia.json';
+const DRIVE_SCOPE      = 'https://www.googleapis.com/auth/drive.file';
+
+let _driveToken    = null;
+let _driveFileId   = null;
+let _tokenClient   = null;
+
+// ── Status visual do Drive ────────────────────────────────────
+function updateDriveStatus(state) {
+  const dot = document.getElementById('drive-dot');
+  const lbl = document.getElementById('drive-lbl');
+  if (!dot || !lbl) return;
+  if (state === 'connected') {
+    dot.style.background = '#4ade80';
+    lbl.textContent = 'Drive conectado';
+  } else if (state === 'syncing') {
+    dot.style.background = '#facc15';
+    lbl.textContent = 'Sincronizando…';
+  } else {
+    dot.style.background = 'rgba(196,169,107,.35)';
+    lbl.textContent = 'Drive desconectado';
+  }
+}
+
+// ── Auth OAuth ────────────────────────────────────────────────
+function initDriveAuth() {
+  if (typeof google === 'undefined') { setTimeout(initDriveAuth, 600); return; }
+  _tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: DRIVE_SCOPE,
+    callback: async (resp) => {
+      if (resp.error) { updateDriveStatus('disconnected'); showM('Erro Drive: ' + resp.error, 'er'); return; }
+      _driveToken = resp.access_token;
+      updateDriveStatus('syncing');
+      await driveSync();
+      updateDriveStatus('connected');
+    }
+  });
+}
+
+function driveConnect() {
+  if (!_tokenClient) { initDriveAuth(); setTimeout(driveConnect, 700); return; }
+  _tokenClient.requestAccessToken();
+}
+
+// ── File ID (busca ou cria o arquivo no Drive) ─────────────────
+async function driveGetFileId() {
+  if (_driveFileId) return _driveFileId;
+  const res  = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=name%3D'${DRIVE_FILE_NAME}'+and+trashed%3Dfalse&spaces=drive&fields=files(id)`,
+    { headers: { Authorization: `Bearer ${_driveToken}` } }
+  );
+  const data = await res.json();
+  if (data.files?.length) { _driveFileId = data.files[0].id; return _driveFileId; }
+  // Cria o arquivo vazio
+  const cr = await fetch('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${_driveToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: DRIVE_FILE_NAME, mimeType: 'application/json' })
+  });
+  const cf = await cr.json();
+  _driveFileId = cf.id;
+  return _driveFileId;
+}
+
+// ── Leitura do Drive ──────────────────────────────────────────
+async function driveRead() {
+  if (!_driveToken) return null;
+  try {
+    const id  = await driveGetFileId();
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`,
+      { headers: { Authorization: `Bearer ${_driveToken}` } });
+    if (!res.ok) return null;
+    const txt = await res.text();
+    return txt ? JSON.parse(txt) : null;
+  } catch { return null; }
+}
+
+// ── Escrita no Drive ──────────────────────────────────────────
+async function driveWrite(data) {
+  if (!_driveToken) return;
+  try {
+    const id = await driveGetFileId();
+    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${id}?uploadType=media`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${_driveToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) { console.warn('Drive write error:', e); }
+}
+
+// ── Sync: Drive é a fonte de verdade ─────────────────────────
+async function driveSync() {
+  const driveData = await driveRead();
+  if (driveData && (driveData.exemplos_aprovados || driveData.regras_aprendidas || driveData.padroes_proibidos)) {
+    localStorage.setItem(INTEL_KEY, JSON.stringify(driveData));
+    const activeTab = document.querySelector('.intel-tab.active')?.dataset?.tab;
+    if (activeTab) renderIntelSection(activeTab);
+  } else {
+    await driveWrite(getIntel());
+  }
+}
+
+function getIntel() {
+  try {
+    const d = JSON.parse(localStorage.getItem(INTEL_KEY) || '{}');
+    return {
+      exemplos_aprovados: d.exemplos_aprovados || [],
+      regras_aprendidas:  d.regras_aprendidas  || [],
+      padroes_proibidos:  d.padroes_proibidos  || []
+    };
+  } catch { return {exemplos_aprovados:[], regras_aprendidas:[], padroes_proibidos:[]}; }
+}
+
+function saveIntel(data) {
+  localStorage.setItem(INTEL_KEY, JSON.stringify(data));
+  if (_driveToken) driveWrite(data);
+}
+
+// ── Drawer ────────────────────────────────────────────────────
+function abrirIntel() {
+  renderIntelSection('exemplos');
+  document.getElementById('intel-overlay').classList.add('open');
+  document.getElementById('intel-drawer').classList.add('open');
+}
+
+function fecharIntel() {
+  document.getElementById('intel-overlay')?.classList.remove('open');
+  document.getElementById('intel-drawer')?.classList.remove('open');
+}
+
+function switchIntelTab(tab) {
+  document.querySelectorAll('.intel-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.intel-section').forEach(s => s.classList.toggle('active', s.id === 'intel-sec-' + tab));
+  renderIntelSection(tab);
+}
+
+function renderIntelSection(tab) {
+  const intel = getIntel();
+  if (tab === 'exemplos')  renderIntelExemplos(intel.exemplos_aprovados);
+  if (tab === 'regras')    renderIntelRegras(intel.regras_aprendidas);
+  if (tab === 'proibidos') renderIntelProibidos(intel.padroes_proibidos);
+}
+
+// ── Renderização das listas ───────────────────────────────────
+function renderIntelExemplos(list) {
+  const el = document.getElementById('intel-list-exemplos');
+  if (!el) return;
+  if (!list.length) { el.innerHTML = '<div class="intel-empty">Nenhum exemplo aprovado ainda.<br>Clique em ✓ em qualquer slide gerado.</div>'; return; }
+  el.innerHTML = list.map(e => `
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-card-txt">"${_esc(e.texto)}"</div>
+        <button class="intel-card-del" onclick="delIntelItem('exemplos_aprovados','${e.id}')" title="Remover">✕</button>
+      </div>
+      <div class="intel-card-meta">
+        <span class="intel-badge">${_esc(e.tipo||'geral')}</span>
+        ${e.tema ? `<span class="intel-badge tema">${_esc(e.tema)}</span>` : ''}
+      </div>
+      ${e.nota ? `<div class="intel-card-nota">💬 ${_esc(e.nota)}</div>` : ''}
+      <div class="intel-card-date">${_esc(e.data||'')}</div>
+    </div>`).join('');
+}
+
+function renderIntelRegras(list) {
+  const el = document.getElementById('intel-list-regras');
+  if (!el) return;
+  if (!list.length) { el.innerHTML = '<div class="intel-empty">Nenhuma regra cadastrada ainda.</div>'; return; }
+  el.innerHTML = list.map(r => `
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-card-txt">${_esc(r.texto)}</div>
+        <button class="intel-card-del" onclick="delIntelItem('regras_aprendidas','${r.id}')" title="Remover">✕</button>
+      </div>
+      <div class="intel-card-date">${_esc(r.data||'')}</div>
+    </div>`).join('');
+}
+
+function renderIntelProibidos(list) {
+  const el = document.getElementById('intel-list-proibidos');
+  if (!el) return;
+  if (!list.length) { el.innerHTML = '<div class="intel-empty">Nenhum padrão proibido cadastrado.</div>'; return; }
+  el.innerHTML = list.map(p => `
+    <div class="intel-card">
+      <div class="intel-card-top">
+        <div class="intel-card-txt">${_esc(p.texto)}</div>
+        <button class="intel-card-del" onclick="delIntelItem('padroes_proibidos','${p.id}')" title="Remover">✕</button>
+      </div>
+      <div class="intel-card-date">${_esc(p.data||'')}</div>
+    </div>`).join('');
+}
+
+// ── Adicionar itens ───────────────────────────────────────────
+function addIntelRegra() {
+  const txt = document.getElementById('intel-input-regra')?.value?.trim();
+  if (!txt) return;
+  const intel = getIntel();
+  intel.regras_aprendidas.unshift({ id: String(Date.now()), texto: txt, data: new Date().toLocaleDateString('pt-BR') });
+  saveIntel(intel);
+  document.getElementById('intel-input-regra').value = '';
+  renderIntelRegras(intel.regras_aprendidas);
+}
+
+function addIntelProibido() {
+  const txt = document.getElementById('intel-input-proibido')?.value?.trim();
+  if (!txt) return;
+  const intel = getIntel();
+  intel.padroes_proibidos.unshift({ id: String(Date.now()), texto: txt, data: new Date().toLocaleDateString('pt-BR') });
+  saveIntel(intel);
+  document.getElementById('intel-input-proibido').value = '';
+  renderIntelProibidos(intel.padroes_proibidos);
+}
+
+function addIntelExemplo(texto, tipo, tema, nota) {
+  const intel = getIntel();
+  intel.exemplos_aprovados.unshift({ id: String(Date.now()), texto, tipo: tipo||'geral', tema: tema||'', nota: nota||'', data: new Date().toLocaleDateString('pt-BR') });
+  saveIntel(intel);
+  renderIntelExemplos(intel.exemplos_aprovados);
+}
+
+function addIntelExemploManual() {
+  const texto = document.getElementById('intel-input-exemplo-txt')?.value?.trim();
+  const tipo  = document.getElementById('intel-input-exemplo-tipo')?.value || 'geral';
+  const tema  = document.getElementById('intel-input-exemplo-tema')?.value || '';
+  const nota  = document.getElementById('intel-input-exemplo-nota')?.value?.trim() || '';
+  if (!texto) return;
+  addIntelExemplo(texto, tipo, tema, nota);
+  document.getElementById('intel-input-exemplo-txt').value = '';
+  document.getElementById('intel-input-exemplo-nota').value = '';
+}
+
+// ── Remover item ──────────────────────────────────────────────
+function delIntelItem(key, id) {
+  const intel = getIntel();
+  intel[key] = intel[key].filter(i => i.id !== id);
+  saveIntel(intel);
+  const tab = key === 'exemplos_aprovados' ? 'exemplos' : key === 'regras_aprendidas' ? 'regras' : 'proibidos';
+  renderIntelSection(tab);
+}
+
+// ── Modal de aprovação ────────────────────────────────────────
+let _aprovSlideId = null;
+
+function abrirAprovacao(slideId, slideType) {
+  _aprovSlideId = slideId;
+  const slide = document.getElementById(slideId);
+  if (!slide) return;
+  const headline = slide.querySelector('[data-f="headline"]')?.innerText?.trim() || '';
+  const body     = slide.querySelector('[data-f="body"]')?.innerText?.trim()     || '';
+  let texto = headline;
+  if (body) texto += (texto ? '\n' : '') + body;
+  document.getElementById('aprov-texto').value = texto;
+  document.getElementById('aprov-tipo').value  = slideType === 'gancho' ? 'gancho' : slideType === 'cta' ? 'cta' : 'body';
+  document.getElementById('aprov-nota').value  = '';
+  document.getElementById('aprov-modal').style.display = 'flex';
+}
+
+function fecharAprovacao() {
+  document.getElementById('aprov-modal').style.display = 'none';
+  _aprovSlideId = null;
+}
+
+function confirmarAprovacao() {
+  const texto = document.getElementById('aprov-texto')?.value?.trim();
+  const tipo  = document.getElementById('aprov-tipo')?.value  || 'geral';
+  const nota  = document.getElementById('aprov-nota')?.value?.trim() || '';
+  if (!texto) return;
+  const tema = document.getElementById('fth')?.value || '';
+  addIntelExemplo(texto, tipo, tema, nota);
+  fecharAprovacao();
+  if (_aprovSlideId) {
+    const btn = document.querySelector(`.bap[onclick*="'${_aprovSlideId}'"]`);
+    if (btn) { btn.textContent = '✓✓'; btn.style.color = '#4ade80'; btn.style.borderColor = 'rgba(74,222,128,.6)'; }
+  }
+  showM('Exemplo salvo na inteligência ✓', 'inf');
+}
+
+// ── Criar drawer e modal no DOM ───────────────────────────────
+(function() {
+  const overlay = document.createElement('div');
+  overlay.id = 'intel-overlay';
+  overlay.addEventListener('click', fecharIntel);
+  document.body.appendChild(overlay);
+
+  const drawer = document.createElement('div');
+  drawer.id = 'intel-drawer';
+  drawer.innerHTML =
+    `<div class="intel-hdr">` +
+      `<span class="intel-title">✦ Inteligência de Copy</span>` +
+      `<div style="display:flex;align-items:center;gap:8px;">` +
+        `<div style="display:flex;align-items:center;gap:5px;cursor:pointer;" onclick="driveConnect()" title="Clique para conectar ao Google Drive">` +
+          `<div id="drive-dot" style="width:7px;height:7px;border-radius:50%;background:rgba(196,169,107,.35);flex-shrink:0;"></div>` +
+          `<span id="drive-lbl" style="font-size:8px;font-weight:700;letter-spacing:1px;color:var(--mu);">Drive desconectado</span>` +
+        `</div>` +
+        `<button onclick="fecharIntel()" title="Fechar">✕</button>` +
+      `</div>` +
+    `</div>` +
+    `<div class="intel-tabs">` +
+      `<button class="intel-tab active" data-tab="exemplos" onclick="switchIntelTab('exemplos')">Exemplos</button>` +
+      `<button class="intel-tab" data-tab="regras" onclick="switchIntelTab('regras')">Regras</button>` +
+      `<button class="intel-tab" data-tab="proibidos" onclick="switchIntelTab('proibidos')">Proibidos</button>` +
+    `</div>` +
+    `<div class="intel-body">` +
+
+      `<div id="intel-sec-exemplos" class="intel-section active">` +
+        `<div class="intel-desc">Copies aprovados viram referência de qualidade para o Claude nas próximas gerações. Clique ✓ em qualquer slide ou adicione manualmente.</div>` +
+        `<div class="intel-list" id="intel-list-exemplos"></div>` +
+        `<div class="intel-add">` +
+          `<label>Adicionar exemplo manualmente</label>` +
+          `<textarea id="intel-input-exemplo-txt" placeholder="Cole ou digite um copy bom aqui..."></textarea>` +
+          `<div class="intel-add-row">` +
+            `<div><label>Tipo</label>` +
+            `<select id="intel-input-exemplo-tipo"><option value="gancho">Gancho</option><option value="body">Body / Conteúdo</option><option value="cta">CTA</option><option value="geral">Geral</option></select></div>` +
+            `<div><label>Tema (opcional)</label>` +
+            `<select id="intel-input-exemplo-tema"><option value="">Qualquer</option><option value="educativo">Educativo</option><option value="provocacao">Provocação</option><option value="urgencia">Urgência</option><option value="captacao">Captação</option><option value="posicionamento">Posicionamento</option><option value="bastidores">Bastidores</option><option value="desmistificacao">Desmistificação</option></select></div>` +
+          `</div>` +
+          `<textarea id="intel-input-exemplo-nota" placeholder="Nota opcional: por que esse exemplo é bom?" style="min-height:50px;"></textarea>` +
+          `<button class="intel-btn-add" onclick="addIntelExemploManual()">+ Adicionar exemplo</button>` +
+        `</div>` +
+      `</div>` +
+
+      `<div id="intel-sec-regras" class="intel-section">` +
+        `<div class="intel-desc">Regras que o Claude deve seguir com prioridade máxima. Ex: "Para donos de restaurante, falar em custo de funcionário funciona melhor que horas perdidas".</div>` +
+        `<div class="intel-list" id="intel-list-regras"></div>` +
+        `<div class="intel-add">` +
+          `<label>Nova regra</label>` +
+          `<textarea id="intel-input-regra" placeholder="Descreva a regra que o Claude deve seguir..."></textarea>` +
+          `<button class="intel-btn-add" onclick="addIntelRegra()">+ Adicionar regra</button>` +
+        `</div>` +
+      `</div>` +
+
+      `<div id="intel-sec-proibidos" class="intel-section">` +
+        `<div class="intel-desc">Padrões, frases ou abordagens que devem ser evitados. Ex: "Não começar o gancho com uma pergunta".</div>` +
+        `<div class="intel-list" id="intel-list-proibidos"></div>` +
+        `<div class="intel-add">` +
+          `<label>Novo padrão proibido</label>` +
+          `<textarea id="intel-input-proibido" placeholder="Descreva o que não deve ser feito..."></textarea>` +
+          `<button class="intel-btn-add" onclick="addIntelProibido()">+ Adicionar</button>` +
+        `</div>` +
+      `</div>` +
+
+    `</div>`;
+  document.body.appendChild(drawer);
+
+  const aprovModal = document.createElement('div');
+  aprovModal.id = 'aprov-modal';
+  aprovModal.style.display = 'none';
+  aprovModal.innerHTML =
+    `<div id="aprov-box">` +
+      `<div class="aprov-hdr">✓ Aprovar exemplo de copy</div>` +
+      `<div class="aprov-body">` +
+        `<div><label class="aprov-label">Texto do exemplo</label>` +
+        `<textarea id="aprov-texto" placeholder="Texto do copy..."></textarea></div>` +
+        `<div class="aprov-row">` +
+          `<div><label class="aprov-label">Tipo</label>` +
+          `<select id="aprov-tipo"><option value="gancho">Gancho</option><option value="body">Body</option><option value="cta">CTA</option><option value="geral">Geral</option></select></div>` +
+          `<div><label class="aprov-label">Nota (opcional)</label>` +
+          `<input type="text" id="aprov-nota" placeholder="Por que é bom?"></div>` +
+        `</div>` +
+      `</div>` +
+      `<div class="aprov-foot">` +
+        `<button class="aprov-cancel" onclick="fecharAprovacao()">Cancelar</button>` +
+        `<button class="aprov-confirm" onclick="confirmarAprovacao()">✓ Salvar na inteligência</button>` +
+      `</div>` +
+    `</div>`;
+  document.body.appendChild(aprovModal);
+  aprovModal.addEventListener('mousedown', e => { if (e.target === aprovModal) fecharAprovacao(); });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('intel-drawer')?.classList.contains('open')) fecharIntel();
+  });
+
+  // Inicializa o cliente Drive assim que a lib Google carregar
+  initDriveAuth();
 })();
 </script>
 </body>
