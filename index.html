@@ -419,6 +419,17 @@ header{background:var(--bp);border-bottom:1px solid var(--bdr);padding:14px 34px
 .aprov-cancel:hover{border-color:rgba(196,169,107,.4);color:var(--cream);}
 .aprov-confirm{background:var(--navy);border:1px solid var(--gold);color:var(--cream);}
 .aprov-confirm:hover{background:var(--gold);color:var(--navy);}
+
+/* ── IMAGE UPLOAD ─────────────────────────────────────────── */
+.img-upload-wrap{display:flex;flex-direction:column;gap:5px;margin-top:4px;}
+.img-thumbs{display:flex;flex-wrap:wrap;gap:5px;min-height:0;}
+.img-thumb{position:relative;width:50px;height:50px;border-radius:4px;overflow:hidden;border:1px solid var(--bdr);flex-shrink:0;}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.img-thumb-del{position:absolute;top:1px;right:1px;width:14px;height:14px;background:rgba(0,0,0,.75);border:none;border-radius:50%;color:#fff;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;}
+.img-thumb-del:hover{background:rgba(220,50,50,.85);}
+.img-add-btn{width:50px;height:50px;border:1px dashed rgba(196,169,107,.3);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);font-size:20px;transition:all .17s;flex-shrink:0;}
+.img-add-btn:hover{border-color:rgba(196,169,107,.6);color:var(--gold);}
+.img-count{font-size:8px;color:var(--mu);letter-spacing:1px;}
 </style>
 </head>
 <body>
@@ -492,6 +503,15 @@ header{background:var(--bp);border-bottom:1px solid var(--bdr);padding:14px 34px
       <label>Referência de estilo <span style="color:var(--mu);font-weight:400;letter-spacing:0;text-transform:none;font-size:9px;">(opcional)</span></label>
       <textarea id="fref" placeholder="Cole aqui uma frase, título ou exemplo de post que admira e quer como referência de tom. Ex: 'Você não tem um problema de vendas. Tem um problema de processo.' — esse tipo de frase direta e provocativa." style="min-height:70px;" oninput="onRefInput()"></textarea>
       <button id="fref-clear" onclick="clearRef()" title="Limpar referência" style="display:none;position:absolute;top:22px;right:6px;width:20px;height:20px;background:var(--bc);border:1px solid var(--bdr);border-radius:50%;color:var(--mu);font-size:10px;cursor:pointer;padding:0;line-height:1;transition:all .17s;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='rgba(196,169,107,.5)'" onmouseout="this.style.color='var(--mu)';this.style.borderColor='var(--bdr)'">✕</button>
+      <div class="img-upload-wrap">
+        <div class="img-thumbs" id="ref-img-thumbs">
+          <label class="img-add-btn" title="Adicionar imagem de referência (máx 10)">
+            <input type="file" accept="image/*" multiple style="display:none" onchange="handleRefImgUpload(this.files)">
+            +
+          </label>
+        </div>
+        <span class="img-count" id="ref-img-count"></span>
+      </div>
     </div>
 
     <div class="mg" id="msg"></div>
@@ -769,7 +789,22 @@ async function gen() {
   setL(true); clearM(); modeHist = [];
 
   try {
-    const raw  = await api(buildSystemPrompt(), prompt(curType, th, idea, numSlides, ref), 2500);
+    // Monta content array: imagens de referência + imagens de exemplos da inteligência + texto
+    const userContent = [];
+    _refImgs.forEach(img => userContent.push({type:'image', source:{type:'base64', media_type:img.type, data:img.data}}));
+    // Inclui até 5 imagens dos exemplos aprovados mais recentes com imagem
+    let intelImgCount = 0;
+    for (const ex of getIntel().exemplos_aprovados) {
+      if (!ex.imagens?.length) continue;
+      for (const img of ex.imagens) {
+        if (intelImgCount >= 5) break;
+        userContent.push({type:'image', source:{type:'base64', media_type:img.type, data:img.data}});
+        intelImgCount++;
+      }
+      if (intelImgCount >= 5) break;
+    }
+    userContent.push({type:'text', text: prompt(curType, th, idea, numSlides, ref)});
+    const raw  = await api(buildSystemPrompt(), userContent, 2500);
     const data = parseJ(raw);
     render(curType, data, th);
     salvarHistorico(curType, data, th);
@@ -820,15 +855,16 @@ Use formas geométricas variadas. Cores: #1B3068, #C4A96B, #0f1d3e. Minimalista 
 // API — FIX #1 #2 #3: headers corretos
 // ============================================================
 async function api(system, user, max=1500) {
+  const content = Array.isArray(user) ? user : [{type:'text', text:user}];
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'x-api-key': getApiKey(),                             // FIX #1
-      'anthropic-version':'2023-06-01',                   // FIX #2
-      'anthropic-dangerous-direct-browser-access':'true'  // FIX #3
+      'x-api-key': getApiKey(),
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
     },
-    body: JSON.stringify({ model:MODEL, max_tokens:max, system, messages:[{role:'user',content:user}] })
+    body: JSON.stringify({ model:MODEL, max_tokens:max, system, messages:[{role:'user',content}] })
   });
   if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${r.status}`); }
   const d = await r.json();
@@ -1337,6 +1373,102 @@ function onRefInput() {
   document.getElementById('fref-clear').style.display = v ? 'flex' : 'none';
   if (v) localStorage.setItem('mhf_ref_estilo', v);
   else   localStorage.removeItem('mhf_ref_estilo');
+}
+
+// ============================================================
+// IMAGE UPLOAD — referência de estilo e inteligência
+// ============================================================
+let _refImgs      = []; // imagens da referência de estilo (sessão)
+let _intelFormImgs = []; // imagens do form de adicionar exemplo manual
+let _aprovImgs    = []; // imagens do modal de aprovação
+
+// Comprime imagem via canvas — maxPx para API, menor para armazenamento
+function compressImg(file, maxPx=1024, quality=0.82) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const out = canvas.toDataURL('image/jpeg', quality);
+        resolve({ data: out.split(',')[1], type: 'image/jpeg', preview: out });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Renderiza thumbnails num container
+function renderImgThumbs(containerId, imgs, removeFn) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const thumbs = imgs.map((img, i) =>
+    `<div class="img-thumb">
+      <img src="${img.preview}">
+      <button class="img-thumb-del" onclick="${removeFn}(${i})" title="Remover">✕</button>
+    </div>`
+  ).join('');
+  const addBtn = imgs.length < 10
+    ? `<label class="img-add-btn" title="Adicionar imagem (máx 10)">
+        <input type="file" accept="image/*" multiple style="display:none"
+          onchange="handle${removeFn.replace('remove','').replace('Img','')}ImgUpload(this.files)">+
+      </label>` : '';
+  el.innerHTML = thumbs + addBtn;
+}
+
+// ── Referência de estilo ──────────────────────────────────────
+async function handleRefImgUpload(files) {
+  const slots = 10 - _refImgs.length;
+  for (const f of Array.from(files).slice(0, slots)) {
+    if (!f.type.startsWith('image/')) continue;
+    _refImgs.push(await compressImg(f, 1024, 0.82));
+  }
+  renderImgThumbs('ref-img-thumbs', _refImgs, 'removeRefImg');
+  const c = document.getElementById('ref-img-count');
+  if (c) c.textContent = _refImgs.length ? `${_refImgs.length}/10 imagens` : '';
+}
+
+function removeRefImg(idx) {
+  _refImgs.splice(idx, 1);
+  renderImgThumbs('ref-img-thumbs', _refImgs, 'removeRefImg');
+  const c = document.getElementById('ref-img-count');
+  if (c) c.textContent = _refImgs.length ? `${_refImgs.length}/10 imagens` : '';
+}
+
+// ── Intel form (drawer) ───────────────────────────────────────
+async function handleIntelFormImgUpload(files) {
+  const slots = 10 - _intelFormImgs.length;
+  for (const f of Array.from(files).slice(0, slots)) {
+    if (!f.type.startsWith('image/')) continue;
+    _intelFormImgs.push(await compressImg(f, 512, 0.72));
+  }
+  renderImgThumbs('intel-form-img-thumbs', _intelFormImgs, 'removeIntelFormImg');
+}
+
+function removeIntelFormImg(idx) {
+  _intelFormImgs.splice(idx, 1);
+  renderImgThumbs('intel-form-img-thumbs', _intelFormImgs, 'removeIntelFormImg');
+}
+
+// ── Approve modal ─────────────────────────────────────────────
+async function handleAprovImgUpload(files) {
+  const slots = 10 - _aprovImgs.length;
+  for (const f of Array.from(files).slice(0, slots)) {
+    if (!f.type.startsWith('image/')) continue;
+    _aprovImgs.push(await compressImg(f, 512, 0.72));
+  }
+  renderImgThumbs('aprov-img-thumbs', _aprovImgs, 'removeAprovImg');
+}
+
+function removeAprovImg(idx) {
+  _aprovImgs.splice(idx, 1);
+  renderImgThumbs('aprov-img-thumbs', _aprovImgs, 'removeAprovImg');
 }
 
 // Limpa o campo de referência
@@ -2278,6 +2410,7 @@ function renderIntelExemplos(list) {
         ${e.tema ? `<span class="intel-badge tema">${_esc(e.tema)}</span>` : ''}
       </div>
       ${e.nota ? `<div class="intel-card-nota">💬 ${_esc(e.nota)}</div>` : ''}
+      ${e.imagens?.length ? `<div class="img-thumbs" style="margin-top:4px;">${e.imagens.map(img=>`<div class="img-thumb"><img src="${img.preview}"></div>`).join('')}</div>` : ''}
       <div class="intel-card-date">${_esc(e.data||'')}</div>
     </div>`).join('');
 }
@@ -2331,9 +2464,13 @@ function addIntelProibido() {
   renderIntelProibidos(intel.padroes_proibidos);
 }
 
-function addIntelExemplo(texto, tipo, tema, nota) {
+function addIntelExemplo(texto, tipo, tema, nota, imagens=[]) {
   const intel = getIntel();
-  intel.exemplos_aprovados.unshift({ id: String(Date.now()), texto, tipo: tipo||'geral', tema: tema||'', nota: nota||'', data: new Date().toLocaleDateString('pt-BR') });
+  intel.exemplos_aprovados.unshift({
+    id: String(Date.now()), texto, tipo: tipo||'geral', tema: tema||'', nota: nota||'',
+    imagens: imagens.map(img => ({data: img.data, type: img.type, preview: img.preview})),
+    data: new Date().toLocaleDateString('pt-BR')
+  });
   saveIntel(intel);
   renderIntelExemplos(intel.exemplos_aprovados);
 }
@@ -2344,9 +2481,11 @@ function addIntelExemploManual() {
   const tema  = document.getElementById('intel-input-exemplo-tema')?.value || '';
   const nota  = document.getElementById('intel-input-exemplo-nota')?.value?.trim() || '';
   if (!texto) return;
-  addIntelExemplo(texto, tipo, tema, nota);
+  addIntelExemplo(texto, tipo, tema, nota, _intelFormImgs);
   document.getElementById('intel-input-exemplo-txt').value = '';
   document.getElementById('intel-input-exemplo-nota').value = '';
+  _intelFormImgs = [];
+  renderImgThumbs('intel-form-img-thumbs', _intelFormImgs, 'removeIntelFormImg');
 }
 
 // ── Remover item ──────────────────────────────────────────────
@@ -2378,6 +2517,7 @@ function abrirAprovacao(slideId, slideType) {
 function fecharAprovacao() {
   document.getElementById('aprov-modal').style.display = 'none';
   _aprovSlideId = null;
+  _aprovImgs = [];
 }
 
 function confirmarAprovacao() {
@@ -2386,7 +2526,8 @@ function confirmarAprovacao() {
   const nota  = document.getElementById('aprov-nota')?.value?.trim() || '';
   if (!texto) return;
   const tema = document.getElementById('fth')?.value || '';
-  addIntelExemplo(texto, tipo, tema, nota);
+  addIntelExemplo(texto, tipo, tema, nota, _aprovImgs);
+  _aprovImgs = [];
   fecharAprovacao();
   if (_aprovSlideId) {
     const btn = document.querySelector(`.bap[onclick*="'${_aprovSlideId}'"]`);
@@ -2435,6 +2576,8 @@ function confirmarAprovacao() {
             `<select id="intel-input-exemplo-tema"><option value="">Qualquer</option><option value="educativo">Educativo</option><option value="provocacao">Provocação</option><option value="urgencia">Urgência</option><option value="captacao">Captação</option><option value="posicionamento">Posicionamento</option><option value="bastidores">Bastidores</option><option value="desmistificacao">Desmistificação</option></select></div>` +
           `</div>` +
           `<textarea id="intel-input-exemplo-nota" placeholder="Nota opcional: por que esse exemplo é bom?" style="min-height:50px;"></textarea>` +
+          `<label style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);">Imagens de referência (opcional, máx 10)</label>` +
+          `<div class="img-thumbs" id="intel-form-img-thumbs"><label class="img-add-btn" title="Adicionar imagem"><input type="file" accept="image/*" multiple style="display:none" onchange="handleIntelFormImgUpload(this.files)">+</label></div>` +
           `<button class="intel-btn-add" onclick="addIntelExemploManual()">+ Adicionar exemplo</button>` +
         `</div>` +
       `</div>` +
@@ -2476,6 +2619,10 @@ function confirmarAprovacao() {
           `<select id="aprov-tipo"><option value="gancho">Gancho</option><option value="body">Body</option><option value="cta">CTA</option><option value="geral">Geral</option></select></div>` +
           `<div><label class="aprov-label">Nota (opcional)</label>` +
           `<input type="text" id="aprov-nota" placeholder="Por que é bom?"></div>` +
+        `</div>` +
+        `<div>` +
+          `<label class="aprov-label">Imagens de referência (opcional, máx 10)</label>` +
+          `<div class="img-thumbs" id="aprov-img-thumbs" style="margin-top:4px;"><label class="img-add-btn" title="Adicionar imagem"><input type="file" accept="image/*" multiple style="display:none" onchange="handleAprovImgUpload(this.files)">+</label></div>` +
         `</div>` +
       `</div>` +
       `<div class="aprov-foot">` +
